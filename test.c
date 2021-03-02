@@ -60,6 +60,7 @@ void save_tree(){
         if(strncmp(diritem -> d_name, ".", 1) != 0){
             temp = diritem -> d_type;
             char *str = diritem->d_name;
+            snprintf(strbuf, PATH_MAX*2, "./%s", str);
             insert_l(str);      //링크드 리스트에 정보를 삽입
         }
     }
@@ -75,7 +76,6 @@ void delete_l(){
 
 void insert_l(char *ch){
     linked *p = (linked *)malloc(sizeof(linked));
-    snprintf(strbuf, PATH_MAX*2, "./%s", ch);
     strcpy(p -> a, ch);
     p -> type = temp;
     p -> op = 0;
@@ -152,14 +152,15 @@ void open_dir(){
     DIR *dirp;      //디렉토리 포인터
     struct dirent *diritem;    //디렉토리 항목 포인터
     dirp = opendir(dp);
+    strcpy(tp, dp);
     while((diritem=readdir(dirp)) != NULL){
         if(strncmp(diritem -> d_name, ".", 1) != 0){        //.으로 시작하는 파일 제외하고 링크드 리스트에 저장
             temp = diritem -> d_type;
             char *str = diritem->d_name;
+            snprintf(strbuf, PATH_MAX*2, "%s/%s",tp, str);
             insert_l(str);
         }
     }
-    strcpy(tp, dp);
     cur -> clos = 1;
 }
 void close_dir(){
@@ -203,6 +204,7 @@ void detail(){
         getmaxyx(curscr,termy,termx);     //가로세로 구하기
         lasttime=time(NULL);
         clear();
+        printw("| MENU | 1. go back\n\n");
         printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
         switch(ch)
         {
@@ -233,7 +235,7 @@ void detail(){
             }
             break;
         }
-        if (ch == KEY_LEFT) //left누르면 tree view로 돌아감
+        if (ch == '1') //left누르면 tree view로 돌아감
             break;
         cur = start -> back;
         read_detail(); // 현재 디렉토리 안에 있는 파일만 자세하게 출력;
