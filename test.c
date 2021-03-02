@@ -24,8 +24,8 @@ typedef struct list{
     int clos;               //어떤 디렉토리를 열었을 때 그 디렉토리의 마지막 파일이면 1로 저장, 그 외에는 0으로 저장
     struct list *front;
     struct list *back;
-    char list_change[PATH_MAX];
-    long int list_size;
+    char list_change[PATH_MAX];         //수정 시간
+    long int list_size;                 //파일 크기
 }linked;
 struct stat st;
 linked START;
@@ -70,14 +70,19 @@ void delete_l(){
     p -> back -> front = p -> front;
     p -> front -> back = p -> back;
     cur = cur -> front;
+    free(p);
 }
 
 void insert_l(char *ch){
     linked *p = (linked *)malloc(sizeof(linked));
+    snprintf(strbuf, PATH_MAX*2, "./%s", ch);
     strcpy(p -> a, ch);
     p -> type = temp;
     p -> op = 0;
     p -> clos = 0;
+    stat(strbuf, &st);
+    p -> list_size = st.st_size;
+    sprintf(p -> list_change,"%s", ctime(&st.st_mtim));         //수정 시간을 요일/월/일/시간/년 형태로 바꾸어 문자열에 저장
     p -> back = cur -> back;
     p -> front = cur;
     cur -> back -> front = p;
@@ -142,7 +147,7 @@ void read_tree()
 }
 void open_dir(){
     cur = cur2;
-    snprintf(dp, PATH_MAX, "%s/%s", tp, cur -> a);           //dp는 열려고 하는 디렉토리 경로, tp는 현재 디렉토리 경로
+    snprintf(dp, PATH_MAX*2, "%s/%s", tp, cur -> a);           //dp는 열려고 하는 디렉토리 경로, tp는 현재 디렉토리 경로
     cur -> op = 1;
     DIR *dirp;      //디렉토리 포인터
     struct dirent *diritem;    //디렉토리 항목 포인터
@@ -174,29 +179,31 @@ void close_dir(){
     sprintf(tp, "%.*s", k, dp);                     //디렉토리 이름 제거하여 경로 변경하여 tp에 저장           
     strcpy(dp, tp);
 }
-int main()
-{
+void read_detail(){
+    cur = cur2;
+    while(cur -> front -> op != 1 && cur -> front != start)
+        cur = cur -> front;
+    printw("\n%-30s\tSize\tLast modification\n\n", "File name");
+    while(--termy > 0){
+        if(cur -> clos == 1 || cur -> back == &TAIL){
+            printw("%-30.*s\t%ld\t%s", termx-1,cur -> a, cur -> list_size, cur ->list_change);
+            break;
+        }
+        else{
+            printw("%-30.*s\t%ld\t%s", termx-1,cur -> a, cur -> list_size, cur ->list_change);
+        }
+        cur = cur -> back;
+    }
+}
+void detail(){
     int ch;
     time_t lasttime;
-    initscr();
-    cbreak();   //no linebuffering
-    noecho();   //no echo of inputs
-    nodelay(stdscr,TRUE);
-    keypad(stdscr,TRUE);    //enable keypad, arrows
-    getcwd(wd,PATH_MAX);    //현재 디렉토리 가져오기
-    save_tree(); //파일 정보 링크드리스트에 저장
-    cur2 = end -> front;
-    snprintf(strbuf,PATH_MAX,"(%.4093s)", cur2 -> a);
-    strcpy(cur2 -> a, strbuf);
-    strcpy(tp, wd);         //wd는 최상위 디렉토리 경로로 바뀌지 않음
-    while(1)    //탈출 조건-> x눌렀을때.
+    while(1)    //탈출 조건-> 뒤로가기 눌렀을때.
     {
         getmaxyx(curscr,termy,termx);     //가로세로 구하기
         lasttime=time(NULL);
         clear();
-        //printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
-        snprintf(strbuf,PATH_MAX,"%s",wd);
-        printw("%.*s",termx-1,strbuf);
+        printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
         switch(ch)
         {
             case KEY_DOWN:
@@ -207,7 +214,7 @@ int main()
                     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
                     cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
                     cur2 = cur2 -> back;
-                    snprintf(strbuf,PATH_MAX,"(%.4093s)", cur2 -> a);
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
                     strcpy(cur2 -> a, strbuf);
                 }
             }
@@ -220,7 +227,68 @@ int main()
                     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
                     cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
                     cur2 = cur2 -> front;
-                    snprintf(strbuf,PATH_MAX,"(%.4093s)", cur2 -> a);
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                    strcpy(cur2 -> a, strbuf);
+                }
+            }
+            break;
+        }
+        if (ch == KEY_LEFT) //left누르면 tree view로 돌아감
+            break;
+        cur = start -> back;
+        read_detail(); // 현재 디렉토리 안에 있는 파일만 자세하게 출력;
+        refresh();
+        while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
+    }
+}
+int main()
+{
+    int ch;
+    time_t lasttime;
+    initscr();
+    cbreak();   //no linebuffering
+    noecho();   //no echo of inputs
+    nodelay(stdscr,TRUE);
+    keypad(stdscr,TRUE);    //enable keypad, arrows
+    getcwd(wd,PATH_MAX);    //현재 디렉토리 가져오기
+    save_tree(); //파일 정보 링크드리스트에 저장
+    cur2 = end -> front;
+    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+    strcpy(cur2 -> a, strbuf);
+    strcpy(tp, wd);         //wd는 최상위 디렉토리 경로로 바뀌지 않음
+    while(1)    //탈출 조건-> x눌렀을때.
+    {
+        getmaxyx(curscr,termy,termx);     //가로세로 구하기
+        lasttime=time(NULL);
+        clear();
+        //printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
+        printw("| MENU | 1. see detail\n\n");
+        snprintf(strbuf,PATH_MAX,"%s",wd);
+        printw("%.*s",termx-1,strbuf);
+        switch(ch)
+        {
+            case KEY_DOWN:
+            //TODO: 커서 다운
+            if(cur2 -> back != &TAIL){
+                if(cur2 -> clos == 0){
+                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                    cur2 = cur2 -> back;
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                    strcpy(cur2 -> a, strbuf);
+                }
+            }
+            break;
+            case KEY_UP:
+            //TODO: 커서 업
+            if(cur2 -> front != start){
+                if(cur2 -> front -> op == 0){
+                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                    cur2 = cur2 -> front;
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
                     strcpy(cur2 -> a, strbuf);
                 }
             }
@@ -229,7 +297,7 @@ int main()
             //TODO: 커서 왼쪽(이전 위치)
             if(cur2 -> front -> op != 0){
                 close_dir();        //디렉토리 닫기
-                snprintf(strbuf,PATH_MAX,"(%.4093s)", cur2 -> a);
+                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
                 strcpy(cur2 -> a, strbuf);
             }
             break;
@@ -241,7 +309,7 @@ int main()
                 cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
                 open_dir();         //디렉토리 열기
                 cur2 = cur2 -> back;
-                snprintf(strbuf,PATH_MAX,"(%.4093s)", cur2 -> a);
+                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
                 strcpy(cur2 -> a, strbuf);
             }
             break;
@@ -251,6 +319,8 @@ int main()
         cur = start -> back;
         read_tree(); // tree view 형식으로 출력
         refresh();
+        if(ch == '1')       //1번 누르면 detail 모드로 바뀜
+            detail();
         while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
     }
     endwin();
