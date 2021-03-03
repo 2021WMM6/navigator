@@ -16,7 +16,7 @@ char wd[PATH_MAX];
 char dp[PATH_MAX];
 char tp[PATH_MAX];
 char strbuf[PATH_MAX];
-
+char name[100];
 typedef struct list{
     char a[PATH_MAX];      //파일 이름
     int type;               //파일 타입
@@ -34,6 +34,7 @@ linked *start = &START;
 linked *end = &TAIL;
 linked *cur;     //cur는 현재 가리키고 있는 링크드 리스트 주소 포인터 - 링크드리스트 삭제, 삽입하는 등의 함수에 사용
 linked *cur2 = NULL;    //cur2는 cur와 하는 일은 같지만 키보드 값에 따라 현재 가리키고있는 파일에 ()표시하기 위해 사용
+linked *cur3 = NULL;   //링크드 리스트 정렬할때 쓰는 포인터
 int temp = 0;
 int x, y, row, column = 0;
 int check = 0;          //check는 디렉토리를 open했을 때 open한 디렉토리가 같은 경로에 있는 다른 파일들 중 마지막일 때만 1값을 가짐
@@ -89,7 +90,13 @@ void insert_l(char *ch){
     cur -> back = p;
     cur = cur -> back;
 }
-
+void change_l(){
+    linked *p = (linked *)malloc(sizeof(linked));
+    *p = *cur;
+    *cur = *cur3;
+    *cur3 = *p;
+    free(p);
+}
 void read_tree()
 {
     int i = 0;
@@ -137,7 +144,7 @@ void read_tree()
             getyx(stdscr, y, x);
             column = y + 1;
         }
-        if(cur -> back == &TAIL)
+        if(cur -> back == &TAIL)                                                                                                                                                                                                                                                                                                                          
             break;
         cur = cur -> back;
         i++;
@@ -180,6 +187,38 @@ void close_dir(){
     sprintf(tp, "%.*s", k, dp);                     //디렉토리 이름 제거하여 경로 변경하여 tp에 저장           
     strcpy(dp, tp);
 }
+void sort_n(){
+    int i, j, least;
+    cur = cur2;
+    while(cur -> front -> op != 1 && cur -> front != start)
+        cur = cur -> front;
+    cur3 = cur;
+    while(cur -> clos != 1){
+        
+    }
+}
+void sorting_l(){
+    char ch;
+    time_t lasttime;
+    printw("| MENU | 1. go back\t2. sorting\n\n");
+    printw("%.*s\n",termx-1, tp);
+    printw("\n1. FILE name\n2. SIZE\n3. Last modification\n");
+    while(1){
+        if(ch == '1'){
+            sort_n();
+            break;
+        }
+        else if(ch == '2'){
+            break;
+        }
+        else if(ch == '3'){
+            break;
+        }
+        refresh();
+        while((ch=getch())==ERR && time(NULL)-lasttime<3);
+    }
+    clear();
+}
 void read_detail(){
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)
@@ -204,8 +243,6 @@ void detail(){
         getmaxyx(curscr,termy,termx);     //가로세로 구하기
         lasttime=time(NULL);
         clear();
-        printw("| MENU | 1. go back\n\n");
-        printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
         switch(ch)
         {
             case KEY_DOWN:
@@ -234,7 +271,14 @@ void detail(){
                 }
             }
             break;
+            case '2':
+            sorting_l();        //정렬 기능
+            break;
+            case '3':
+            break;
         }
+        printw("| MENU | 1. go back\t2. sorting\n\n");
+        printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
         if (ch == '1') //left누르면 tree view로 돌아감
             break;
         cur = start -> back;
@@ -242,6 +286,7 @@ void detail(){
         refresh();
         while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
     }
+    clear();
 }
 int main()
 {
@@ -264,9 +309,6 @@ int main()
         lasttime=time(NULL);
         clear();
         //printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
-        printw("| MENU | 1. see detail\n\n");
-        snprintf(strbuf,PATH_MAX,"%s",wd);
-        printw("%.*s",termx-1,strbuf);
         switch(ch)
         {
             case KEY_DOWN:
@@ -315,14 +357,18 @@ int main()
                 strcpy(cur2 -> a, strbuf);
             }
             break;
+            case '1':   //1번 누르면 detail 모드로 바뀜
+            detail();
+            break;
         }
         if (ch == EXIT_KEY) //프로그램 종료
             break;
+        printw("| MENU | 1. see detail\n\n");
+        snprintf(strbuf,PATH_MAX,"%s",wd);
+        printw("%.*s",termx-1,strbuf);
         cur = start -> back;
         read_tree(); // tree view 형식으로 출력
         refresh();
-        if(ch == '1')       //1번 누르면 detail 모드로 바뀜
-            detail();
         while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
     }
     endwin();
