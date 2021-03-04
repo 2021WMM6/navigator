@@ -35,6 +35,7 @@ linked *end = &TAIL;
 linked *cur;     //cur는 현재 가리키고 있는 링크드 리스트 주소 포인터 - 링크드리스트 삭제, 삽입하는 등의 함수에 사용
 linked *cur2 = NULL;    //cur2는 cur와 하는 일은 같지만 키보드 값에 따라 현재 가리키고있는 파일에 ()표시하기 위해 사용
 linked *cur3 = NULL;   //링크드 리스트 정렬할때 쓰는 포인터
+linked *least = NULL;
 int temp = 0;
 int x, y, row, column = 0;
 int check = 0;          //check는 디렉토리를 open했을 때 open한 디렉토리가 같은 경로에 있는 다른 파일들 중 마지막일 때만 1값을 가짐
@@ -91,13 +92,36 @@ void insert_l(char *ch){
     cur = cur -> back;
 }
 void change_l(){
-    linked *p = (linked *)malloc(sizeof(linked));
-    *p = *cur;
-    *cur = *cur3;
-    *cur3 = *p;
-    free(p);
+    linked *p;
+    if(least -> clos == 1){
+        least -> clos = 0;
+        cur -> clos = 1;
+    }
+    if(cur -> back == least){
+        cur -> front -> back = least;
+        least -> back -> front = cur;
+        p = cur -> front;
+        cur -> front = least;
+        least -> front = p;
+        p = least -> back;
+        least -> back = cur;
+        cur -> back = p;
+    }
+    else{
+        cur -> front -> back = least;
+        cur -> back -> front = least;
+        least -> front -> back = cur;
+        least -> back -> front = cur;
+        p = cur -> front;
+        cur -> front = least -> front;
+        least -> front = p;
+        p = cur -> back;
+        cur -> back = least -> back;
+        least -> back = p;
+    }
+    cur = least;
 }
-void read_tree()
+void print_tree()
 {
     int i = 0;
     printw(" --- ");
@@ -106,12 +130,16 @@ void read_tree()
     push(row);      //row정보 stack에 저장
     while(--termy > 0){
         if(cur -> op == 1){             //열린 디렉토리가 있을 때
-            mvprintw(column, row, "\\");
-            printw("-%.*s",termx-1,cur -> a);
+            if(cur -> front -> op != 1){
+                mvprintw(column, row, "\\");
+                printw("-%.*s",termx-1,cur -> a);
+            }
+            else
+                printw("%.*s",termx-1,cur -> a);
             if(cur -> clos == 1)
                 check = 1;
             cur = cur -> back;
-            read_tree();
+            print_tree();
         }
         else if(cur -> clos == 1){ //열린 디렉토리의 마지막 파일일 때
             if(i == 0){                 //열린 디렉토리 파일이 하나만 있을 때
@@ -188,14 +216,27 @@ void close_dir(){
     strcpy(dp, tp);
 }
 void sort_n(){
-    int i, j, least;
+    int ch;
+    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)
         cur = cur -> front;
-    cur3 = cur;
-    while(cur -> clos != 1){
-        
+    while(cur -> back -> back != NULL && cur -> clos != 1){
+        least = cur;
+        cur3 = cur -> back;
+        while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
+            if(strcmp(least -> a, cur3 -> a) > 0)
+                least = cur3;
+            cur3 = cur3 -> back;
+        }
+        if(strcmp(cur -> a, least -> a) != 0)
+            change_l();
+        cur = cur -> back;
     }
+    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+    strcpy(cur2 -> a, strbuf);
 }
 void sorting_l(){
     char ch;
@@ -219,7 +260,7 @@ void sorting_l(){
     }
     clear();
 }
-void read_detail(){
+void print_detail(){
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)
         cur = cur -> front;
@@ -247,7 +288,7 @@ void detail(){
         {
             case KEY_DOWN:
             //TODO: 커서 다운
-            if(cur2 -> back != &TAIL){
+            if(cur2 -> back -> back != NULL){
                 if(cur2 -> clos == 0){
                     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
                     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -282,7 +323,7 @@ void detail(){
         if (ch == '1') //left누르면 tree view로 돌아감
             break;
         cur = start -> back;
-        read_detail(); // 현재 디렉토리 안에 있는 파일만 자세하게 출력;
+        print_detail(); // 현재 디렉토리 안에 있는 파일만 자세하게 출력;
         refresh();
         while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
     }
@@ -313,7 +354,7 @@ int main()
         {
             case KEY_DOWN:
             //TODO: 커서 다운
-            if(cur2 -> back != &TAIL){
+            if(cur2 -> back -> back != NULL){
                 if(cur2 -> clos == 0){
                     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
                     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -367,7 +408,7 @@ int main()
         snprintf(strbuf,PATH_MAX,"%s",wd);
         printw("%.*s",termx-1,strbuf);
         cur = start -> back;
-        read_tree(); // tree view 형식으로 출력
+        print_tree(); // tree view 형식으로 출력
         refresh();
         while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
     }
