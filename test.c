@@ -172,8 +172,29 @@ void close_dir(){
     sprintf(tp, "%.*s", k, dp);                     //디렉토리 이름 제거하여 경로 변경하여 tp에 저장           
     strcpy(dp, tp);
 }
+void sort_size(){
+    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+    cur = cur2;
+    while(cur -> front -> op != 1 && cur -> front != start)
+        cur = cur -> front;
+    while(cur -> back -> back != NULL && cur -> clos != 1){
+        least = cur;
+        cur3 = cur -> back;
+        while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
+            if(least -> list_size > cur3 -> list_size)
+                least = cur3;
+            cur3 = cur3 -> back;
+        }
+        if(cur -> list_size != least -> list_size)
+            change_l();
+        cur = cur -> back;
+    }
+    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+    strcpy(cur2 -> a, strbuf);
+}
 void sort_n(){
-    int ch;
     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
     cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
@@ -207,6 +228,7 @@ void sorting_l(){
             break;
         }
         else if(ch == '2'){
+            sort_size();
             break;
         }
         else if(ch == '3'){
