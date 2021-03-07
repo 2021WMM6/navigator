@@ -41,6 +41,7 @@ void insert_l(char *ch){
     p -> clos = 0;
     stat(strbuf, &st);
     p -> list_size = st.st_size;
+    p -> list_time = st.st_mtim.tv_sec;
     sprintf(p -> list_change,"%s", ctime(&st.st_mtim));         //수정 시간을 요일/월/일/시간/년 형태로 바꾸어 문자열에 저장
     p -> back = cur -> back;
     p -> front = cur;
@@ -194,6 +195,28 @@ void sort_size(){
     snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
     strcpy(cur2 -> a, strbuf);
 }
+void sort_date(){
+    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+    cur = cur2;
+    while(cur -> front -> op != 1 && cur -> front != start)
+        cur = cur -> front;
+    while(cur -> back -> back != NULL && cur -> clos != 1){
+        least = cur;
+        cur3 = cur -> back;
+        while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
+            if(least -> list_time > cur3 -> list_time)
+                least = cur3;
+            cur3 = cur3 -> back;
+        }
+        if(cur -> list_time != least -> list_time)
+            change_l();
+        cur = cur -> back;
+    }
+    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+    strcpy(cur2 -> a, strbuf);
+}
 void sort_n(){
     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -232,6 +255,7 @@ void sorting_l(){
             break;
         }
         else if(ch == '3'){
+            sort_date();
             break;
         }
         refresh();

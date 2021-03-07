@@ -25,6 +25,7 @@ typedef struct list{
     struct list *back;
     char list_change[PATH_MAX];         //수정 시간
     long int list_size;                 //파일 크기
+    time_t list_time;
 }linked;
 struct stat st; 
 linked START;
