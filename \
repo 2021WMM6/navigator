@@ -1,68 +1,13 @@
 #include "test.h"
+#include "func.h"
 
 int pop(){return top == 0 ? -1 : stack[--top];}
 void push(int a){stack[top++] = a;}
 int tops(){return top == 0 ? -1 : stack[top - 1];}
-linked* search(char name[100]){
-    linked *q=start;
-/*  while(q->front->op!=1&&q->front!=start)
-        q=q->front;*/
-    while(q->back!=NULL){
-    q=q->back;
-//  printw("%s\n",q->a);
-
-    if(strcmp(q->a,name)==0){
-        return q;
-        }
-    }
-    refresh();
-    return NULL;
-    }
-
-void get_name(){
-        char name1[100];
-        printw("| MENU | 1. go back\t2. sorting\t3. searching\n\n");
-        printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
-
-        print_detail();
-        mvprintw(0,69,"--------------------------------------------\n");
-        for(int i=1;i<5;i++){
-        mvprintw(i,69,"|                                          |");
-        }
-        mvprintw(5,69,"--------------------------------------------\n");
-        mvprintw(1,70,"File Name: ");
-        nocbreak();
-        echo();
-        nodelay(stdscr,FALSE);
-        mvscanw(1,81,"%s",name1);
-
-        linked *p=search(name1);
-       if(p!=NULL){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = p;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-
-        mvprintw(3,70,"success!");
-        }
-        else{
-            mvprintw(3,70,"name not found");
-
-
-        }
-    refresh();
-
-    getch();
-    nodelay(stdscr,TRUE);
-    noecho();
-    cbreak();
-}
-
 void save_tree(){
     start -> front = NULL;
-    start -> back = NULL;
+    end -> back = NULL;
+	
     TAIL = *start;
     end = &TAIL;
     start -> back = end;
@@ -89,6 +34,52 @@ void delete_l(){
     cur = cur -> front;
     free(p);
 }
+
+linked* search(char name[100]){
+    linked *q=cur2
+    while(q->back!=NULL){
+    q=q->back;
+	printw("%s\n",q->a);
+
+    if(strcmp(q->a,name)==0){
+        return q;
+        }
+    }
+    return NULL;
+    }
+
+
+void get_name(){
+  		char name1[100];       
+		
+        printw("search word:");
+		nocbreak();
+		echo();
+		nodelay(stdscr,FALSE);
+        scanw("%s",name1);
+	
+		linked *p=search(name1);
+       if(p!=NULL){
+                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                    cur2 = p;
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);                                     
+                    strcpy(cur2 -> a, strbuf);
+
+		printw("success!\n");
+		}
+        else{
+            printw("name not found\n");
+        }
+	refresh();
+
+	getch();
+	nodelay(stdscr,TRUE);
+	noecho();
+	cbreak();
+}
+
 void insert_l(char *ch){
     linked *p = (linked *)malloc(sizeof(linked));
     strcpy(p -> a, ch);
@@ -97,7 +88,6 @@ void insert_l(char *ch){
     p -> clos = 0;
     stat(strbuf, &st);
     p -> list_size = st.st_size;
-    p -> list_time = st.st_mtim.tv_sec;
     sprintf(p -> list_change,"%s", ctime(&st.st_mtim));         //수정 시간을 요일/월/일/시간/년 형태로 바꾸어 문자열에 저장
     p -> back = cur -> back;
     p -> front = cur;
@@ -106,37 +96,13 @@ void insert_l(char *ch){
     cur = cur -> back;
 }
 void change_l(){
-    linked *p;
-    if(least -> clos == 1){
-        least -> clos = 0;
-        cur -> clos = 1;
-    }
-    if(cur -> back == least){
-        cur -> front -> back = least;
-        least -> back -> front = cur;
-        p = cur -> front;
-        cur -> front = least;
-        least -> front = p;
-        p = least -> back;
-        least -> back = cur;
-        cur -> back = p;
-    }
-    else{
-        cur -> front -> back = least;
-        cur -> back -> front = least;
-        least -> front -> back = cur;
-        least -> back -> front = cur;
-        p = cur -> front;
-        cur -> front = least -> front;
-        least -> front = p;
-        p = cur -> back;
-        cur -> back = least -> back;
-        least -> back = p;
-    }
-    cur = least;
+    linked *p = (linked *)malloc(sizeof(linked));
+    *p = *cur;
+    *cur = *cur3;
+    *cur3 = *p;
+    free(p);
 }
-
-void print_tree()
+void read_tree()
 {
     int i = 0;
     printw(" --- ");
@@ -145,16 +111,12 @@ void print_tree()
     push(row);      //row정보 stack에 저장
     while(--termy > 0){
         if(cur -> op == 1){             //열린 디렉토리가 있을 때
-            if(cur -> front -> op != 1){
-                mvprintw(column, row, "\\");
-                printw("-%.*s",termx-1,cur -> a);
-            }
-            else
-                printw("%.*s",termx-1,cur -> a);
+            mvprintw(column, row, "\\");
+            printw("-%.*s",termx-1,cur -> a);
             if(cur -> clos == 1)
                 check = 1;
             cur = cur -> back;
-            print_tree();
+            read_tree();
         }
         else if(cur -> clos == 1){ //열린 디렉토리의 마지막 파일일 때
             if(i == 0){                 //열린 디렉토리 파일이 하나만 있을 때
@@ -195,7 +157,6 @@ void print_tree()
     if(termy > 0)
         mvprintw(column - 1, row, "\\");
 }
-
 void open_dir(){
     cur = cur2;
     snprintf(dp, PATH_MAX*2, "%s/%s", tp, cur -> a);           //dp는 열려고 하는 디렉토리 경로, tp는 현재 디렉토리 경로
@@ -213,13 +174,6 @@ void open_dir(){
         }
     }
     cur -> clos = 1;
-    if(cur == cur2){
-        cur -> op = 0;
-        cur -> clos = 0;
-        int k = strlen(dp) - strlen(cur -> a) - 1;  
-        sprintf(tp, "%.*s", k, dp);                               
-        strcpy(dp, tp);
-    }
 }
 void close_dir(){
     cur = cur2 -> front;
@@ -238,50 +192,15 @@ void close_dir(){
     sprintf(tp, "%.*s", k, dp);                     //디렉토리 이름 제거하여 경로 변경하여 tp에 저장           
     strcpy(dp, tp);
 }
-void sort_type(char ch){
-    if(ch == '1'){
-        while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
-            if(strcmp(least -> a, cur3 -> a) > 0)
-                least = cur3;
-            cur3 = cur3 -> back;
-        }
-        if(strcmp(cur -> a, least -> a) != 0)
-            change_l();
-    }
-    else if(ch == '2'){
-        while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
-            if(least -> list_size > cur3 -> list_size)
-                least = cur3;
-            cur3 = cur3 -> back;
-        }
-        if(cur -> list_size != least -> list_size)
-            change_l();
-    }
-    else if(ch == '3'){
-        while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
-            if(least -> list_time > cur3 -> list_time)
-                least = cur3;
-            cur3 = cur3 -> back;
-        }
-        if(cur -> list_time != least -> list_time)
-            change_l();
-    }
-}
-void sort(char ch){
-    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+void sort_n(){
+    int i, j, least;
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)
         cur = cur -> front;
-    while(cur -> back -> back != NULL && cur -> clos != 1){
-        least = cur;
-        cur3 = cur -> back;
-        sort_type(ch);
-        cur = cur -> back;
+    cur3 = cur;
+    while(cur -> clos != 1){
+        
     }
-    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-    strcpy(cur2 -> a, strbuf);
 }
 void sorting_l(){
     char ch;
@@ -291,15 +210,13 @@ void sorting_l(){
     printw("\n1. FILE name\n2. SIZE\n3. Last modification\n");
     while(1){
         if(ch == '1'){
-            sort(ch);
+            sort_n();
             break;
         }
         else if(ch == '2'){
-            sort(ch);
             break;
         }
         else if(ch == '3'){
-            sort(ch);
             break;
         }
         refresh();
@@ -307,7 +224,7 @@ void sorting_l(){
     }
     clear();
 }
-void print_detail(){
+void read_detail(){
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)
         cur = cur -> front;
@@ -335,7 +252,7 @@ void detail(){
         {
             case KEY_DOWN:
             //TODO: 커서 다운
-            if(cur2 -> back -> back != NULL){
+            if(cur2 -> back != &TAIL){
                 if(cur2 -> clos == 0){
                     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
                     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -366,12 +283,12 @@ void detail(){
 			get_name();
             break;
         }
-        printw("| MENU | 1. go back\t2. sorting\t3. searching\n\n");
+        printw("| MENU | 1. go back\t2. sorting\n\n");
         printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
         if (ch == '1') //left누르면 tree view로 돌아감
             break;
         cur = start -> back;
-        print_detail(); // 현재 디렉토리 안에 있는 파일만 자세하게 출력;
+        read_detail(); // 현재 디렉토리 안에 있는 파일만 자세하게 출력;
         refresh();
         while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
     }
@@ -402,7 +319,7 @@ int main()
         {
             case KEY_DOWN:
             //TODO: 커서 다운
-            if(cur2 -> back -> back != NULL){
+            if(cur2 -> back != &TAIL){
                 if(cur2 -> clos == 0){
                     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
                     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -441,8 +358,7 @@ int main()
                 strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
                 cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
                 open_dir();         //디렉토리 열기
-                if(cur2 -> op == 1)
-                    cur2 = cur2 -> back;
+                cur2 = cur2 -> back;
                 snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
                 strcpy(cur2 -> a, strbuf);
             }
@@ -457,7 +373,7 @@ int main()
         snprintf(strbuf,PATH_MAX,"%s",wd);
         printw("%.*s",termx-1,strbuf);
         cur = start -> back;
-        print_tree(); // tree view 형식으로 출력
+        read_tree(); // tree view 형식으로 출력
         refresh();
         while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
     }
