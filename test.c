@@ -95,6 +95,7 @@ void insert_l(char *ch){
     p -> type = temp;
     p -> op = 0;
     p -> clos = 0;
+    p -> pin = 0;
     stat(strbuf, &st);
     p -> list_size = st.st_size;
     p -> list_time = st.st_mtim.tv_sec;
@@ -133,6 +134,7 @@ void change_l(){
         cur -> back = least -> back;
         least -> back = p;
     }
+    cur3 = cur;
     cur = least;
 }
 
@@ -267,6 +269,19 @@ void sort_type(char ch){
             change_l();
     }
 }
+void except_pin(){
+    cur3 = cur;
+    while(cur -> back -> back != NULL && cur -> clos != 1){
+        if(cur3 != cur && cur -> pin == 1){
+            cur -> pin = 0;
+            least = cur3;
+            change_l();
+            cur3 = cur3 -> back;
+        }
+        cur = cur -> back;
+    }
+    cur = cur3;
+}
 void sort(char ch){
     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -274,6 +289,9 @@ void sort(char ch){
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)
         cur = cur -> front;
+    except_pin();
+    printw("%s", cur3 -> a);
+    while((getch())==ERR);
     while(cur -> back -> back != NULL && cur -> clos != 1){
         least = cur;
         cur3 = cur -> back;
@@ -306,6 +324,27 @@ void sorting_l(){
         while((ch=getch())==ERR && time(NULL)-lasttime<3);
     }
     clear();
+}
+void print_pin(){
+    int i = 3;
+    mvprintw(0,69,"--------------------------------------------\n");
+    for(int i=1;i<3;i++){
+        mvprintw(i,69,"|                                          |");
+    }
+    mvprintw(1,70,"File Name: ");
+    cur = cur2;
+    while(cur -> front -> op != 1 && cur -> front != start)
+        cur = cur -> front;
+    while(cur -> back -> back != NULL && cur -> clos != 1){
+        if(cur -> pin == 1){
+            mvprintw(i,69,"|                                          |");
+            mvprintw(i, 70, "%s", cur -> a);
+            i++;
+        }
+        cur = cur -> back;
+    }
+    mvprintw(i,69,"|                                          |");
+    mvprintw(i + 1,69,"--------------------------------------------\n");
 }
 void use_pin(){
     int ch;
@@ -343,9 +382,11 @@ void use_pin(){
                 }
             }
             break;
-            case '2':
-            break;
-            case '3':
+            case 'p':
+            if(cur2 -> pin == 1)
+                cur2 -> pin = 0;
+            else
+                cur2 -> pin = 1;
             break;
         }
         printw("| MENU | 1. quit\n\n");
@@ -354,6 +395,7 @@ void use_pin(){
             break;
         cur = start -> back;
         print_detail(); // 현재 디렉토리 안에 있는 파일만 자세하게 출력;
+        print_pin();
         refresh();
         while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
     }

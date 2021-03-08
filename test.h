@@ -26,6 +26,7 @@ typedef struct list{
     char list_change[PATH_MAX];         //수정 시간
     long int list_size;                 //파일 크기
     time_t list_time;
+    int pin;
 }linked;
 struct stat st; 
 linked START;
@@ -57,4 +58,5 @@ void read_detail();
 void detail();
 void print_detail();
 void sorting_pin();
-
+void use_pin();
+void print_pin();
