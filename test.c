@@ -32,7 +32,6 @@ void delete_l(){
     cur = cur -> front;
     free(p);
 }
-
 void insert_l(char *ch){
     linked *p = (linked *)malloc(sizeof(linked));
     strcpy(p -> a, ch);
@@ -155,6 +154,13 @@ void open_dir(){
         }
     }
     cur -> clos = 1;
+    if(cur == cur2){
+        cur -> op = 0;
+        cur -> clos = 0;
+        int k = strlen(dp) - strlen(cur -> a) - 1;  
+        sprintf(tp, "%.*s", k, dp);                               
+        strcpy(dp, tp);
+    }
 }
 void close_dir(){
     cur = cur2 -> front;
@@ -173,60 +179,8 @@ void close_dir(){
     sprintf(tp, "%.*s", k, dp);                     //디렉토리 이름 제거하여 경로 변경하여 tp에 저장           
     strcpy(dp, tp);
 }
-void sort_size(){
-    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-    cur = cur2;
-    while(cur -> front -> op != 1 && cur -> front != start)
-        cur = cur -> front;
-    while(cur -> back -> back != NULL && cur -> clos != 1){
-        least = cur;
-        cur3 = cur -> back;
-        while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
-            if(least -> list_size > cur3 -> list_size)
-                least = cur3;
-            cur3 = cur3 -> back;
-        }
-        if(cur -> list_size != least -> list_size)
-            change_l();
-        cur = cur -> back;
-    }
-    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-    strcpy(cur2 -> a, strbuf);
-}
-void sort_date(){
-    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-    cur = cur2;
-    while(cur -> front -> op != 1 && cur -> front != start)
-        cur = cur -> front;
-    while(cur -> back -> back != NULL && cur -> clos != 1){
-        least = cur;
-        cur3 = cur -> back;
-        while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
-            if(least -> list_time > cur3 -> list_time)
-                least = cur3;
-            cur3 = cur3 -> back;
-        }
-        if(cur -> list_time != least -> list_time)
-            change_l();
-        cur = cur -> back;
-    }
-    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-    strcpy(cur2 -> a, strbuf);
-}
-void sort_n(){
-    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-    cur = cur2;
-    while(cur -> front -> op != 1 && cur -> front != start)
-        cur = cur -> front;
-    while(cur -> back -> back != NULL && cur -> clos != 1){
-        least = cur;
-        cur3 = cur -> back;
+void sort_type(char ch){
+    if(ch == '1'){
         while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
             if(strcmp(least -> a, cur3 -> a) > 0)
                 least = cur3;
@@ -234,6 +188,37 @@ void sort_n(){
         }
         if(strcmp(cur -> a, least -> a) != 0)
             change_l();
+    }
+    else if(ch == '2'){
+        while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
+            if(least -> list_size > cur3 -> list_size)
+                least = cur3;
+            cur3 = cur3 -> back;
+        }
+        if(cur -> list_size != least -> list_size)
+            change_l();
+    }
+    else if(ch == '3'){
+        while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
+            if(least -> list_time > cur3 -> list_time)
+                least = cur3;
+            cur3 = cur3 -> back;
+        }
+        if(cur -> list_time != least -> list_time)
+            change_l();
+    }
+}
+void sort(char ch){
+    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+    cur = cur2;
+    while(cur -> front -> op != 1 && cur -> front != start)
+        cur = cur -> front;
+    while(cur -> back -> back != NULL && cur -> clos != 1){
+        least = cur;
+        cur3 = cur -> back;
+        sort_type(ch);
         cur = cur -> back;
     }
     snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
@@ -247,15 +232,15 @@ void sorting_l(){
     printw("\n1. FILE name\n2. SIZE\n3. Last modification\n");
     while(1){
         if(ch == '1'){
-            sort_n();
+            sort(ch);
             break;
         }
         else if(ch == '2'){
-            sort_size();
+            sort(ch);
             break;
         }
         else if(ch == '3'){
-            sort_date();
+            sort(ch);
             break;
         }
         refresh();
@@ -396,7 +381,8 @@ int main()
                 strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
                 cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
                 open_dir();         //디렉토리 열기
-                cur2 = cur2 -> back;
+                if(cur2 -> op == 1)
+                    cur2 = cur2 -> back;
                 snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
                 strcpy(cur2 -> a, strbuf);
             }
