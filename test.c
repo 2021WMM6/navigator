@@ -3,6 +3,7 @@
 int pop(){return top == 0 ? -1 : stack[--top];}
 void push(int a){stack[top++] = a;}
 int tops(){return top == 0 ? -1 : stack[top - 1];}
+
 linked* search(char name[100]){
     linked *q=start;
 /*  while(q->front->op!=1&&q->front!=start)
@@ -17,24 +18,23 @@ linked* search(char name[100]){
     }
     refresh();
     return NULL;
-    }
-
+}
 void get_name(){
         char name1[100];
         printw("| MENU | 1. go back\t2. sorting\t3. searching\n\n");
         printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
 
         print_detail();
-        mvprintw(0,69,"--------------------------------------------\n");
+        mvprintw(0,80,"--------------------------------------------\n");
         for(int i=1;i<5;i++){
-        mvprintw(i,69,"|                                          |");
+            mvprintw(i,80,"|                                          |");
         }
-        mvprintw(5,69,"--------------------------------------------\n");
-        mvprintw(1,70,"File Name: ");
+        mvprintw(5,80,"--------------------------------------------\n");
+        mvprintw(1,81,"File Name: ");
         nocbreak();
         echo();
         nodelay(stdscr,FALSE);
-        mvscanw(1,81,"%s",name1);
+        mvscanw(1,92,"%s",name1);
 
         linked *p=search(name1);
        if(p!=NULL){
@@ -45,10 +45,10 @@ void get_name(){
                     snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
                     strcpy(cur2 -> a, strbuf);
 
-        mvprintw(3,70,"success!");
+        mvprintw(3,81,"success!");
         }
         else{
-            mvprintw(3,70,"name not found");
+            mvprintw(3,81,"name not found");
 
 
         }
@@ -59,7 +59,6 @@ void get_name(){
     noecho();
     cbreak();
 }
-
 void save_tree(){
     start -> front = NULL;
     start -> back = NULL;
@@ -137,9 +136,7 @@ void change_l(){
     cur3 = cur;
     cur = least;
 }
-
-void print_tree()
-{
+void print_tree(){
     int i = 0;
     printw(" --- ");
     getyx(stdscr, y, x); //현재 커서 좌표 구하는 함수
@@ -149,7 +146,11 @@ void print_tree()
         if(cur -> op == 1){             //열린 디렉토리가 있을 때
             if(cur -> front -> op != 1){
                 mvprintw(column, row, "\\");
-                printw("-%.*s",termx-1,cur -> a);
+                
+                if (cur->type == DT_DIR)
+                    printw("+%.*s",termx-1,cur -> a);
+                else if (cur->type == DT_REG)
+                    printw("-%.*s",termx-1,cur -> a);
             }
             else
                 printw("%.*s",termx-1,cur -> a);
@@ -165,7 +166,12 @@ void print_tree()
             }
             else{
                 mvprintw(column, row, "\\");
-                printw("-%.*s",termx-1,cur -> a);
+                
+                if (cur->type == DT_DIR)
+                    printw("+%.*s",termx-1,cur -> a);
+                else if (cur->type == DT_REG)
+                    printw("-%.*s",termx-1,cur -> a);
+
                 getyx(stdscr, y, x);
                 column = y + 1;
             }
@@ -185,7 +191,12 @@ void print_tree()
         }
         else{
             mvprintw(column, row, "|");
-            printw("-%.*s",termx-1,cur -> a);
+            
+            if (cur->type == DT_DIR)
+                printw("+%.*s",termx-1,cur -> a);
+            else if (cur->type == DT_REG)
+                printw("-%.*s",termx-1,cur -> a);
+
             getyx(stdscr, y, x);
             column = y + 1;
         }
@@ -197,7 +208,6 @@ void print_tree()
     if(termy > 0)
         mvprintw(column - 1, row, "\\");
 }
-
 void open_dir(){
     cur = cur2;
     snprintf(dp, PATH_MAX*2, "%s/%s", tp, cur -> a);           //dp는 열려고 하는 디렉토리 경로, tp는 현재 디렉토리 경로
@@ -271,8 +281,8 @@ void sort_type(char ch){
 }
 void except_pin(){
     cur3 = cur;
-    while(cur -> back -> back != NULL && cur -> clos != 1){
-        if(cur3 != cur && cur -> pin == 1){
+    while(cur -> back != NULL && cur -> front -> clos != 1){
+        if(cur -> pin == 1){
             cur -> pin = 0;
             least = cur3;
             change_l();
@@ -290,8 +300,6 @@ void sort(char ch){
     while(cur -> front -> op != 1 && cur -> front != start)
         cur = cur -> front;
     except_pin();
-    printw("%s", cur3 -> a);
-    while((getch())==ERR);
     while(cur -> back -> back != NULL && cur -> clos != 1){
         least = cur;
         cur3 = cur -> back;
@@ -304,9 +312,9 @@ void sort(char ch){
 void sorting_l(){
     char ch;
     time_t lasttime;
-    printw("| MENU | 1. go back\t2. sorting\n\n");
+    printw("| MENU | 1. Go Back\t2. Sorting\n\n");
     printw("%.*s\n",termx-1, tp);
-    printw("\n1. FILE name\n2. SIZE\n3. Last modification\n");
+    printw("\n1. File Name\n2. Size\n3. Last Modification\n");
     while(1){
         if(ch == '1'){
             sort(ch);
@@ -327,24 +335,24 @@ void sorting_l(){
 }
 void print_pin(){
     int i = 3;
-    mvprintw(0,69,"--------------------------------------------\n");
+    mvprintw(0,80,"--------------------------------------------\n");
     for(int i=1;i<3;i++){
-        mvprintw(i,69,"|                                          |");
+        mvprintw(i,80,"|                                          |");
     }
-    mvprintw(1,70,"File Name: ");
+    mvprintw(1,81,"PIN List: ");
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)
         cur = cur -> front;
-    while(cur -> back -> back != NULL && cur -> clos != 1){
+    while(cur -> back != NULL && cur -> front -> clos != 1){
         if(cur -> pin == 1){
-            mvprintw(i,69,"|                                          |");
-            mvprintw(i, 70, "%s", cur -> a);
+            mvprintw(i,80,"|                                          |");
+            mvprintw(i, 81, "%s", cur -> a);
             i++;
         }
         cur = cur -> back;
     }
-    mvprintw(i,69,"|                                          |");
-    mvprintw(i + 1,69,"--------------------------------------------\n");
+    mvprintw(i,80,"|                                          |");
+    mvprintw(i + 1,80,"--------------------------------------------\n");
 }
 void use_pin(){
     int ch;
@@ -389,7 +397,7 @@ void use_pin(){
                 cur2 -> pin = 1;
             break;
         }
-        printw("| MENU | 1. quit\n\n");
+        printw("| MENU | 1. Quit\n\n");
         printw("|| If you want to use pin, press 'p' ||\n");
         if (ch == '1') //left누르면 tree view로 돌아감
             break;
@@ -404,7 +412,7 @@ void use_pin(){
 void sorting_pin(){
     char ch;
     time_t lasttime;
-    printw("| MENU | 1. go back\t2. sorting\n\n");
+    printw("| MENU | 1. Go back\t2. Sorting\n\n");
     printw("%.*s\n",termx-1, tp);
     printw("\n1. Use pin\n2. Don't use pin\n");
     while(1){
@@ -428,14 +436,14 @@ void print_detail(){
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)
         cur = cur -> front;
-    printw("\n%-30s\tSize\tLast modification\n\n", "File name");
+    printw("\n%-30s\tFile Type\tSize\tLast Modification\n\n", "File name");
     while(--termy > 0){
         if(cur -> clos == 1 || cur -> back == &TAIL){
-            printw("%-30.*s\t%ld\t%s", termx-1,cur -> a, cur -> list_size, cur ->list_change);
+            printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, cur -> a, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
             break;
         }
         else{
-            printw("%-30.*s\t%ld\t%s", termx-1,cur -> a, cur -> list_size, cur ->list_change);
+            printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, cur -> a, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
         }
         cur = cur -> back;
     }
@@ -483,7 +491,7 @@ void detail(){
 			get_name();
             break;
         }
-        printw("| MENU | 1. go back\t2. sorting\t3. searching\n\n");
+        printw("| MENU | 1. Go Back\t2. Sorting\t3. Searching\n\n");
         printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
         if (ch == '1') //left누르면 tree view로 돌아감
             break;
@@ -494,8 +502,8 @@ void detail(){
     }
     clear();
 }
-int main()
-{
+
+int main(){
     int ch;
     time_t lasttime;
     initscr();
@@ -570,7 +578,7 @@ int main()
         }
         if (ch == EXIT_KEY) //프로그램 종료
             break;
-        printw("| MENU | 1. see detail\n\n");
+        printw("| MENU | 1. See Detail\t\tx. Exit\n\n");
         snprintf(strbuf,PATH_MAX,"%s",wd);
         printw("%.*s",termx-1,strbuf);
         cur = start -> back;
