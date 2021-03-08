@@ -346,7 +346,12 @@ void print_pin(){
     while(cur -> back != NULL && cur -> front -> clos != 1){
         if(cur -> pin == 1){
             mvprintw(i,80,"|                                          |");
-            mvprintw(i, 81, "%s", cur -> a);
+            if(cur == cur2){
+                snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                mvprintw(i, 81, "%.*s",strlen(cur2 -> a) - 2, strbuf);
+            }
+            else
+                mvprintw(i, 81, "%s", cur -> a);
             i++;
         }
         cur = cur -> back;
