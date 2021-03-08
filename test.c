@@ -21,7 +21,7 @@ linked* search(char name[100]){
 }
 void get_name(){
         char name1[100];
-        printw("| MENU | 1. go back\t2. sorting\t3. searching\n\n");
+        printw("| MENU | 1. Go back\t2. Sorting\t3. Searching\n\n");
         printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
 
         print_detail();
@@ -59,6 +59,8 @@ void get_name(){
     noecho();
     cbreak();
 }
+//precondition: start가 NULL값을 가지면 안 된다. wd가 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
+//postcondition: 링크드 리스트를 만들고 현재 디렉토리안의 파일들의 정보를 링크드 리스트에 삽입한다.
 void save_tree(){
     start -> front = NULL;
     start -> back = NULL;
@@ -76,10 +78,12 @@ void save_tree(){
             temp = diritem -> d_type;
             char *str = diritem->d_name;
             snprintf(strbuf, PATH_MAX*2, "./%s", str);
-            insert_l(str);      //링크드 리스트에 정보를 삽입
+            insert_l(str);
         }
     }
 }
+//precondition: cur가 start, end를 포인터하고 있으면 안 된다.
+//postcondition: 링크드리스트에서 cur가 가리키는 구조체를 삭제
 void delete_l(){
     linked *p = cur;
     if(p == start)  return ;
@@ -88,6 +92,8 @@ void delete_l(){
     cur = cur -> front;
     free(p);
 }
+//precondition: ch는 readdir로 읽은 파일의 이름으로 NULL이면 안 된다.
+//postcondition: 동적으로 할당된 메모리에 파일 정보를 저장하여 링크드리스트에 삽입한다.
 void insert_l(char *ch){
     linked *p = (linked *)malloc(sizeof(linked));
     strcpy(p -> a, ch);
@@ -105,13 +111,16 @@ void insert_l(char *ch){
     cur -> back = p;
     cur = cur -> back;
 }
+//precondition: cur와 least가 교환하고자 하는 구조체들을 각각 포인트하고 있어야한다.
+//postcondition: cur가 가리키고 있는 구조체와 least가 가리키고 있는 구조체의 순서를 바꾼다.
+//               cur3은 교환된 cur의 주소값을 가진고 cur는 교환된 least의 주소값을 가지게 한다.
 void change_l(){
     linked *p;
     if(least -> clos == 1){
         least -> clos = 0;
         cur -> clos = 1;
     }
-    if(cur -> back == least){
+    if(cur -> back == least){           //least가 cur바로 다음에 있는 경우
         cur -> front -> back = least;
         least -> back -> front = cur;
         p = cur -> front;
@@ -136,6 +145,8 @@ void change_l(){
     cur3 = cur;
     cur = least;
 }
+//precondition: cur은 start -> back의 주소값을 가져야 한다.
+//postcondition: 링크드 리스트의 파일들을 tree view형식으로 출력한다.
 void print_tree(){
     int i = 0;
     printw(" --- ");
@@ -208,6 +219,9 @@ void print_tree(){
     if(termy > 0)
         mvprintw(column - 1, row, "\\");
 }
+//precondition: cur2는 디렉토리 파일을 포인트하고 있어야 하고, tp는 현재 디렉토리 경로를 문자열로 가지고 있어야 한다.
+//postcondition: 디렉토리를 열어서 그 안에 있는 파일들의 정보를 링크드리스트에 저장한다.
+//               열기로 한 디렉토리의 op값을 1로 변경, 열어놓은 디렉토리 안의 파일들 중 마지막 파일의 경우 clos값을 1로 저장한다.
 void open_dir(){
     cur = cur2;
     snprintf(dp, PATH_MAX*2, "%s/%s", tp, cur -> a);           //dp는 열려고 하는 디렉토리 경로, tp는 현재 디렉토리 경로
@@ -233,23 +247,31 @@ void open_dir(){
         strcpy(dp, tp);
     }
 }
+//precondition:  cur2는 열어놓은 디렉토리 안의 파일들 중 첫번쨰 파일을 포인트하고 있어야한다. 
+//               dp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
+//postcondition: 열어놓은 디렉토리의 파일들을 링크드리스에서 삭제하고 열었었던 디렉토리의 op값을 0으로 변경한다.
+//               cur2는 닫은 디렉토리를 포인트하고 있고, 바뀐 경로를 tp와 dp에 문자열로 저장한다.
 void close_dir(){
     cur = cur2 -> front;
     cur -> op = 0;
     while(1){
         cur = cur -> back;
         if(cur -> clos == 1){
-            delete_l();     //링크드 리스트에서 삭제
+            delete_l();     
             break;
         }
         else
             delete_l();
     }
     cur2 = cur;
-    int k = strlen(dp) - strlen(cur -> a) - 1;      //디렉토리를 닫았기 때문에 현재 경로에서
-    sprintf(tp, "%.*s", k, dp);                     //디렉토리 이름 제거하여 경로 변경하여 tp에 저장           
+    int k = strlen(dp) - strlen(cur -> a) - 1;
+    sprintf(tp, "%.*s", k, dp);                                
     strcpy(dp, tp);
 }
+//precondition: 1 <= ch <= 3 이어야하고 cur는 NULL이거나 정렬하고자 하는 파일들 중 마지막 파일을 포인트하고 있으면 안 된다. 
+//              cur3은 cur -> back을 포인트하고 있어야한다.
+//postcondition: ch값에 따라 파일이름, 크기, 수정날짜 중 하나를 기준으로 선택하여
+//               cur가 포인트하고 있는 파일부터 현재 디렉토리의 마지막 파일까지 중 기준값이 가장 작은 값의 파일이 cur가 가리키는 위치에 들어간다.
 void sort_type(char ch){
     if(ch == '1'){
         while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
@@ -279,6 +301,8 @@ void sort_type(char ch){
             change_l();
     }
 }
+//precondition: cur는 현재 디렉토리안의 첫번째 파일을 포인트하고 있어야 한다.
+//postcondition: 현재 디렉토리안의 파일들 중 pin으로 고정된 파일들을 맨 앞으로 보내고 cur는 pin으로 고정되지 않은 첫번째 파일을 가리킨다.
 void except_pin(){
     cur3 = cur;
     while(cur -> back != NULL && cur -> front -> clos != 1){
@@ -292,6 +316,8 @@ void except_pin(){
     }
     cur = cur3;
 }
+//precondition: cur2가 NULL값을 가지거나 현재 디렉토리 밖의 파일을 포인트하면 안 된다.
+//postcondition: 현재 디렉토리안의 파일을 ch값에 따라 파일이름, 크기, 수정날짜 중 하나를 선택하여 오름차순으로 정렬한다.
 void sort(char ch){
     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -309,6 +335,8 @@ void sort(char ch){
     snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
     strcpy(cur2 -> a, strbuf);
 }
+//precondition: tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
+//postcondition: Sorting을 어떤 기준으로 할 것인지 메뉴를 화면에 출력해주고 ch값을 입력받고 정렬 기능을 실행한다.
 void sorting_l(){
     char ch;
     time_t lasttime;
@@ -333,6 +361,8 @@ void sorting_l(){
     }
     clear();
 }
+//precondition: cur2가 NULL값을 가지거나 현재 디렉토리 밖의 파일을 포인트하면 안 된다.
+//postcondition: Pin으로 고정된 파일들의 목록을 detail 옆에 출력해준다.
 void print_pin(){
     int i = 3;
     mvprintw(0,80,"--------------------------------------------\n");
@@ -359,10 +389,12 @@ void print_pin(){
     mvprintw(i,80,"|                                          |");
     mvprintw(i + 1,80,"--------------------------------------------\n");
 }
+//precondition: cur2가 NULL값을 가지거나 현재 디렉토리 밖의 파일을 포인트하면 안 된다.
+//postcondition: 현재 ()로 가리키고 있는 파일들을 p를 눌러서 Pin list에 추가하거나 뺄 수 있고 1누르면 Pin 기능을 종료한다.
 void use_pin(){
     int ch;
     time_t lasttime;
-    while(1)    //탈출 조건-> 뒤로가기 눌렀을때.
+    while(1)    //탈출 조건-> 1 눌렀을때.
     {
         getmaxyx(curscr,termy,termx);     //가로세로 구하기
         lasttime=time(NULL);
@@ -404,7 +436,7 @@ void use_pin(){
         }
         printw("| MENU | 1. Quit\n\n");
         printw("|| If you want to use pin, press 'p' ||\n");
-        if (ch == '1') //left누르면 tree view로 돌아감
+        if (ch == '1')
             break;
         cur = start -> back;
         print_detail(); // 현재 디렉토리 안에 있는 파일만 자세하게 출력;
@@ -414,6 +446,8 @@ void use_pin(){
     }
     clear();
 }
+//precondition: tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
+//postcondition: Pin기능을 사용할 것인지 메뉴로 출력하고 1을 누르면 Pin기능과 정렬 기능을 실행, 2를 누르면 정렬 기능만 실행한다.
 void sorting_pin(){
     char ch;
     time_t lasttime;
@@ -437,6 +471,8 @@ void sorting_pin(){
         while((ch=getch())==ERR && time(NULL)-lasttime<3);
     }
 }
+//precondition: cur2가 NULL값을 가지거나 현재 디렉토리 밖의 파일을 포인트하면 안 된다.
+//postcondition: 현재 디렉토리의 파일들의 이름, 크기, 수정날짜를 detail하게 화면에 출력한다.
 void print_detail(){
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)
@@ -453,6 +489,8 @@ void print_detail(){
         cur = cur -> back;
     }
 }
+//precondition: cur2가 NULL값을 가지거나 현재 디렉토리 밖의 파일을 포인트하면 안 된다. tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
+//postcondition: 메뉴를 출력하고 ch값에 따라 2를 누르면 정렬 기능을 실행, 3을 누르면 검색기능을 실행하며 1을 누르면 detail 기능을 종료한다.
 void detail(){
     int ch;
     time_t lasttime;
