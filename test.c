@@ -248,6 +248,81 @@ void sorting_l(){
     }
     clear();
 }
+void use_pin(){
+    int ch;
+    time_t lasttime;
+    while(1)    //탈출 조건-> 뒤로가기 눌렀을때.
+    {
+        getmaxyx(curscr,termy,termx);     //가로세로 구하기
+        lasttime=time(NULL);
+        clear();
+        switch(ch)
+        {
+            case KEY_DOWN:
+            //TODO: 커서 다운
+            if(cur2 -> back -> back != NULL){
+                if(cur2 -> clos == 0){
+                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                    cur2 = cur2 -> back;
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                    strcpy(cur2 -> a, strbuf);
+                }
+            }
+            break;
+            case KEY_UP:
+            //TODO: 커서 업
+            if(cur2 -> front != start){
+                if(cur2 -> front -> op == 0){
+                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                    cur2 = cur2 -> front;
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                    strcpy(cur2 -> a, strbuf);
+                }
+            }
+            break;
+            case '2':
+            break;
+            case '3':
+            break;
+        }
+        printw("| MENU | 1. quit\n\n");
+        printw("|| If you want to use pin, press 'p' ||\n");
+        if (ch == '1') //left누르면 tree view로 돌아감
+            break;
+        cur = start -> back;
+        print_detail(); // 현재 디렉토리 안에 있는 파일만 자세하게 출력;
+        refresh();
+        while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
+    }
+    clear();
+}
+void sorting_pin(){
+    char ch;
+    time_t lasttime;
+    printw("| MENU | 1. go back\t2. sorting\n\n");
+    printw("%.*s\n",termx-1, tp);
+    printw("\n1. Use pin\n2. Don't use pin\n");
+    while(1){
+        if(ch == '1'){
+            clear();
+            use_pin();
+            clear();
+            sorting_l();
+            break;
+        }
+        else if(ch == '2'){
+            clear();
+            sorting_l();
+            break;
+        }
+        refresh();
+        while((ch=getch())==ERR && time(NULL)-lasttime<3);
+    }
+}
 void print_detail(){
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)
@@ -301,7 +376,7 @@ void detail(){
             }
             break;
             case '2':
-            sorting_l();        //정렬 기능
+            sorting_pin();        //정렬 기능
             break;
             case '3':
             break;

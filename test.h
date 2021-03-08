@@ -55,5 +55,6 @@ void sort_n();
 void sorting_l();
 void read_detail();
 void detail();
-
+void print_detail();
+void sorting_pin();
 
