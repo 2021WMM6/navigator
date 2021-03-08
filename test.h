@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <time.h>
 #define EXIT_KEY 'x'
+
 int termy,termx;
 char wd[PATH_MAX];
 char dp[PATH_MAX];
@@ -27,6 +28,7 @@ typedef struct list{
     long int list_size;                 //파일 크기
     time_t list_time;
 }linked;
+
 struct stat st; 
 linked START;
 linked TAIL;
@@ -36,11 +38,13 @@ linked *cur;     //cur는 현재 가리키고 있는 링크드 리스트 주소 
 linked *cur2 = NULL;    //cur2는 cur와 하는 일은 같지만 키보드 값에 따라 현재 가리키고있는 파일에 ()표시하기 위해 사용
 linked *cur3 = NULL;   //링크드 리스트 정렬할때 쓰는 포인터
 linked *least = NULL;
+
 int temp = 0;
 int x, y, row, column = 0;
 int check = 0;          //check는 디렉토리를 open했을 때 open한 디렉토리가 같은 경로에 있는 다른 파일들 중 마지막일 때만 1값을 가짐
 int stack[10001] = {0};
-int top = 0;   
+int top = 0;
+  
 int pop();
 void push(int );
 int tops();
@@ -55,5 +59,3 @@ void sort_n();
 void sorting_l();
 void read_detail();
 void detail();
-
-
