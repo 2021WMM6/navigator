@@ -300,6 +300,15 @@ void sort_type(char ch){
         if(cur -> list_time != least -> list_time)
             change_l();
     }
+    else if(ch == '4'){
+        while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
+            if(least -> type > cur3 -> type)
+                least = cur3;
+            cur3 = cur3 -> back;
+        }
+        if(cur -> type != least -> type)
+            change_l();
+    }
 }
 //precondition: cur는 현재 디렉토리안의 첫번째 파일을 포인트하고 있어야 한다.
 //postcondition: 현재 디렉토리안의 파일들 중 pin으로 고정된 파일들을 맨 앞으로 보내고 cur는 pin으로 고정되지 않은 첫번째 파일을 가리킨다.
@@ -342,7 +351,7 @@ void sorting_l(){
     time_t lasttime;
     printw("| MENU | 1. Go Back\t2. Sorting\n\n");
     printw("%.*s\n",termx-1, tp);
-    printw("\n1. File Name\n2. Size\n3. Last Modification\n");
+    printw("\n1. File Name\n2. Size\n3. Last Modification\n4. File Type\n");
     while(1){
         if(ch == '1'){
             sort(ch);
@@ -353,6 +362,10 @@ void sorting_l(){
             break;
         }
         else if(ch == '3'){
+            sort(ch);
+            break;
+        }
+        else if(ch == '4'){
             sort(ch);
             break;
         }
