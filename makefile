@@ -1,2 +1,3 @@
-navigator: navigator_main.c
-	@gcc navigator_main.c -o navigator -lncurses
+navigator: test.c test.h
+	@gcc test.c -lncurses
+	@./a.out

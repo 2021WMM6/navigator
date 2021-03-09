@@ -104,7 +104,7 @@ void insert_l(char *ch){
     stat(strbuf, &st);
     p -> list_size = st.st_size;
     p -> list_time = st.st_mtim.tv_sec;
-    sprintf(p -> list_change,"%s", ctime(&st.st_mtim));         //수정 시간을 요일/월/일/시간/년 형태로 바꾸어 문자열에 저장
+    sprintf(p -> list_change,"%s", ctime(&st.st_mtim.tv_sec));         //수정 시간을 요일/월/일/시간/년 형태로 바꾸어 문자열에 저장
     p -> back = cur -> back;
     p -> front = cur;
     cur -> back -> front = p;
@@ -365,29 +365,29 @@ void sorting_l(){
 //postcondition: Pin으로 고정된 파일들의 목록을 detail 옆에 출력해준다.
 void print_pin(){
     int i = 3;
-    mvprintw(0,80,"--------------------------------------------\n");
+    mvprintw(0,86,"------------------------------------------\n");
     for(int i=1;i<3;i++){
-        mvprintw(i,80,"|                                          |");
+        mvprintw(i,85,"|                                          |");
     }
-    mvprintw(1,81,"PIN List: ");
+    mvprintw(1,86,"PIN List: ");
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)
         cur = cur -> front;
     while(cur -> back != NULL && cur -> front -> clos != 1){
         if(cur -> pin == 1){
-            mvprintw(i,80,"|                                          |");
+            mvprintw(i,85,"|                                          |");
             if(cur == cur2){
                 snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                mvprintw(i, 81, "%.*s",strlen(cur2 -> a) - 2, strbuf);
+                mvprintw(i, 86, "%.*s",strlen(cur2 -> a) - 2, strbuf);
             }
             else
-                mvprintw(i, 81, "%s", cur -> a);
+                mvprintw(i, 86, "%s", cur -> a);
             i++;
         }
         cur = cur -> back;
     }
-    mvprintw(i,80,"|                                          |");
-    mvprintw(i + 1,80,"--------------------------------------------\n");
+    mvprintw(i,85,"|                                          |");
+    mvprintw(i + 1,86,"------------------------------------------\n");
 }
 //precondition: cur2가 NULL값을 가지거나 현재 디렉토리 밖의 파일을 포인트하면 안 된다.
 //postcondition: 현재 ()로 가리키고 있는 파일들을 p를 눌러서 Pin list에 추가하거나 뺄 수 있고 1누르면 Pin 기능을 종료한다.
