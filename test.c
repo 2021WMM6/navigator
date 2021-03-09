@@ -4,60 +4,148 @@ int pop(){return top == 0 ? -1 : stack[--top];}
 void push(int a){stack[top++] = a;}
 int tops(){return top == 0 ? -1 : stack[top - 1];}
 
-linked* search(char name[100]){
-    linked *q=start;
-/*  while(q->front->op!=1&&q->front!=start)
-        q=q->front;*/
-    while(q->back!=NULL){
-    q=q->back;
-//  printw("%s\n",q->a);
-
-    if(strcmp(q->a,name)==0){
-        return q;
+void search(char name[100]){
+    temp = 0;
+    char *str;
+    cur = cur2;
+    while(cur -> front -> op != 1 && cur -> front != start)
+        cur = cur -> front;
+    while(cur -> back -> back != NULL && cur -> clos != 1){
+        str = cur -> a;
+        while(*str){
+            if(strncmp(str, name, strlen(name)) == 0){
+                temp = 1;
+                cur2 = cur;
+                cur -> search_list = 1;
+                break;
+            }
+            else{
+                str++;
+            }
         }
+        cur = cur -> back;
     }
-    refresh();
-    return NULL;
+}
+void select_search_list(){
+    int ch;
+    time_t lasttime;
+    cbreak();   
+    noecho();
+    nodelay(stdscr,TRUE);
+    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+    strcpy(cur2 -> a, strbuf);
+    while(1)    //탈출 조건-> 1 눌렀을때.
+    {
+        getmaxyx(curscr,termy,termx);     //가로세로 구하기
+        lasttime=time(NULL);
+        switch(ch)
+        {
+            case KEY_DOWN:
+            //TODO: 커서 다운
+            if(cur2 -> back -> back != NULL && cur2 -> clos == 0){
+                snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                cur = cur2;
+                do{
+                    cur = cur -> back;
+                } while (cur -> search_list != 1 && cur -> back != NULL && cur -> front -> clos == 0);
+                if(cur -> back != NULL && cur -> front -> clos == 0)
+                    cur2 = cur;
+                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                strcpy(cur2 -> a, strbuf);
+            }
+            break;
+            case KEY_UP:
+            //TODO: 커서 업
+            if(cur2 -> front != start && cur2 -> front -> op == 0){
+                snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                cur = cur2;
+                do{
+                    cur = cur -> front;
+                } while (cur -> search_list != 1 && cur != start && cur -> back -> op == 0);
+                if(cur != start && cur -> back -> op == 0)
+                    cur2 = cur;
+                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                strcpy(cur2 -> a, strbuf);
+            }
+            break;
+        }
+        if (ch == '1')
+            break;
+        print_search_list();
+        refresh();
+        while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
+    }
+    clear();
 }
 void get_name(){
-        char name1[100];
-        printw("| MENU | 1. Go back\t2. Sorting\t3. Searching\n\n");
-        printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
-
-        print_detail();
-        mvprintw(0,80,"--------------------------------------------\n");
-        for(int i=1;i<5;i++){
-            mvprintw(i,80,"|                                          |");
+    char name1[100];
+    mvprintw(0,86,"------------------------------------------\n");
+    for(int i=1;i<5;i++){
+        mvprintw(i,85,"|                                          |");
+    }
+    mvprintw(5,86,"------------------------------------------\n");
+    mvprintw(1,86,"File Name: ");
+    nocbreak();
+    echo();
+    nodelay(stdscr,FALSE);
+    mvscanw(1,97,"%s",name1);
+    search(name1);
+    if(temp == 1){
+        select_search_list();
+    }
+    else{
+        mvprintw(3,86,"name not found");
+        refresh();
+        getch();
+        nodelay(stdscr,TRUE);
+        noecho();
+        cbreak();
+        snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+        strcpy(cur2 -> a, strbuf);
+        return;
+    }
+}
+void print_search_list(){
+    int i = 3;
+    cur = cur2;
+    while(cur -> front -> op != 1 && cur -> front != start)
+        cur = cur -> front;
+    while(cur -> back != NULL && cur -> front -> clos != 1){
+        if(cur -> search_list == 1){
+            mvprintw(i,85,"|                                          |");
+            mvprintw(i, 86, "%s", cur -> a);
+            i++;
         }
-        mvprintw(5,80,"--------------------------------------------\n");
-        mvprintw(1,81,"File Name: ");
-        nocbreak();
-        echo();
-        nodelay(stdscr,FALSE);
-        mvscanw(1,92,"%s",name1);
-
-        linked *p=search(name1);
-       if(p!=NULL){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = p;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-
-        mvprintw(3,81,"success!");
-        }
-        else{
-            mvprintw(3,81,"name not found");
-
-
-        }
-    refresh();
-
-    getch();
-    nodelay(stdscr,TRUE);
-    noecho();
-    cbreak();
+        cur = cur -> back;
+    }
+    mvprintw(i,85,"|                                          |");
+    mvprintw(i + 1,86,"------------------------------------------\n");
+}
+void use_search(){
+    int ch;
+    time_t lasttime;
+    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+    getmaxyx(curscr,termy,termx);     //가로세로 구하기
+    lasttime=time(NULL);
+    clear();
+    printw("| MENU | 1. Go Back\t2. Sorting\t3. Searching\n\n");
+    printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
+    print_detail();
+    get_name();
+    cur = cur2;
+    while(cur -> front -> op != 1 && cur -> front != start)
+        cur = cur -> front;
+    while(cur -> back -> back != NULL && cur -> clos != 1){
+        cur -> search_list = 0;
+        cur = cur -> back;
+    }
+    clear();
 }
 //precondition: start가 NULL값을 가지면 안 된다. wd가 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
 //postcondition: 링크드 리스트를 만들고 현재 디렉토리안의 파일들의 정보를 링크드 리스트에 삽입한다.
@@ -101,6 +189,7 @@ void insert_l(char *ch){
     p -> op = 0;
     p -> clos = 0;
     p -> pin = 0;
+    p  -> search_list = 0;
     stat(strbuf, &st);
     p -> list_size = st.st_size;
     p -> list_time = st.st_mtim.tv_sec;
@@ -464,7 +553,7 @@ void use_pin(){
 void sorting_pin(){
     char ch;
     time_t lasttime;
-    printw("| MENU | 1. Go back\t2. Sorting\n\n");
+    printw("| MENU | 1. Go Back\t2. Sorting\n\n");
     printw("%.*s\n",termx-1, tp);
     printw("\n1. Use pin\n2. Don't use pin\n");
     while(1){
@@ -544,7 +633,7 @@ void detail(){
             sorting_pin();        //정렬 기능
             break;
             case '3':
-			get_name();
+			use_search();
             break;
         }
         printw("| MENU | 1. Go Back\t2. Sorting\t3. Searching\n\n");
