@@ -34,14 +34,14 @@ void select_search_list(){
     nodelay(stdscr,TRUE);
     snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
     strcpy(cur2 -> a, strbuf);
-    while(1)    //Å»Ãâ Á¶°Ç-> 1 ´­·¶À»¶§.
+    while(1)    //íƒˆì¶œ ì¡°ê±´-> 1 ëˆŒë €ì„ë•Œ.
     {
-        getmaxyx(curscr,termy,termx);     //°¡·Î¼¼·Î ±¸ÇÏ±â
+        getmaxyx(curscr,termy,termx);     //ê°€ë¡œì„¸ë¡œ êµ¬í•˜ê¸°
         lasttime=time(NULL);
         switch(ch)
         {
             case KEY_DOWN:
-            //TODO: Ä¿¼­ ´Ù¿î
+            //TODO: ì»¤ì„œ ë‹¤ìš´
             if(cur2 -> back -> back != NULL && cur2 -> clos == 0){
                 snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
                 strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -57,7 +57,7 @@ void select_search_list(){
             }
             break;
             case KEY_UP:
-            //TODO: Ä¿¼­ ¾÷
+            //TODO: ì»¤ì„œ ì—…
             if(cur2 -> front != start && cur2 -> front -> op == 0){
                 snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
                 strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -77,7 +77,7 @@ void select_search_list(){
             break;
         print_search_list();
         refresh();
-        while((ch=getch())==ERR && time(NULL)-lasttime<3);   //Å° ÀÔ·Â µÉ¶§±îÁö ´ë±â
+        while((ch=getch())==ERR && time(NULL)-lasttime<3);   //í‚¤ ì…ë ¥ ë ë•Œê¹Œì§€ ëŒ€ê¸°
     }
     clear();
 }
@@ -131,11 +131,11 @@ void use_search(){
     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
     cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-    getmaxyx(curscr,termy,termx);     //°¡·Î¼¼·Î ±¸ÇÏ±â
+    getmaxyx(curscr,termy,termx);     //ê°€ë¡œì„¸ë¡œ êµ¬í•˜ê¸°
     lasttime=time(NULL);
     clear();
     printw("| MENU | 1. Go Back\t2. Sorting\t3. Searching\n\n");
-    printw("%.*s\n",termx-1, tp);     //ÇöÀç °æ·Î°¡ ¾îµğÀÎÁö Ãâ·Â
+    printw("%.*s\n",termx-1, tp);     //í˜„ì¬ ê²½ë¡œê°€ ì–´ë””ì¸ì§€ ì¶œë ¥
     print_detail();
     get_name();
     cur = cur2;
@@ -147,8 +147,8 @@ void use_search(){
     }
     clear();
 }
-//precondition: start°¡ NULL°ªÀ» °¡Áö¸é ¾È µÈ´Ù. wd°¡ ÇöÀç µğ·ºÅä¸®ÀÇ °æ·Î¸¦ ¹®ÀÚ¿­·Î °¡Áö°í ÀÖ¾î¾ß ÇÑ´Ù.
-//postcondition: ¸µÅ©µå ¸®½ºÆ®¸¦ ¸¸µé°í ÇöÀç µğ·ºÅä¸®¾ÈÀÇ ÆÄÀÏµéÀÇ Á¤º¸¸¦ ¸µÅ©µå ¸®½ºÆ®¿¡ »ğÀÔÇÑ´Ù.
+//precondition: startê°€ NULLê°’ì„ ê°€ì§€ë©´ ì•ˆ ëœë‹¤. wdê°€ í˜„ì¬ ë””ë ‰í† ë¦¬ì˜ ê²½ë¡œë¥¼ ë¬¸ìì—´ë¡œ ê°€ì§€ê³  ìˆì–´ì•¼ í•œë‹¤.
+//postcondition: ë§í¬ë“œ ë¦¬ìŠ¤íŠ¸ë¥¼ ë§Œë“¤ê³  í˜„ì¬ ë””ë ‰í† ë¦¬ì•ˆì˜ íŒŒì¼ë“¤ì˜ ì •ë³´ë¥¼ ë§í¬ë“œ ë¦¬ìŠ¤íŠ¸ì— ì‚½ì…í•œë‹¤.
 void save_tree(){
     start -> front = NULL;
     start -> back = NULL;
@@ -157,8 +157,8 @@ void save_tree(){
     start -> back = end;
     end -> front = start;
     cur = start;
-    DIR *dirp;      //µğ·ºÅä¸® Æ÷ÀÎÅÍ
-    struct dirent *diritem;    //µğ·ºÅä¸® Ç×¸ñ Æ÷ÀÎÅÍ
+    DIR *dirp;      //ë””ë ‰í† ë¦¬ í¬ì¸í„°
+    struct dirent *diritem;    //ë””ë ‰í† ë¦¬ í•­ëª© í¬ì¸í„°
 
     dirp = opendir(wd);
     while((diritem=readdir(dirp)) != NULL){
@@ -170,8 +170,8 @@ void save_tree(){
         }
     }
 }
-//precondition: cur°¡ start, end¸¦ Æ÷ÀÎÅÍÇÏ°í ÀÖÀ¸¸é ¾È µÈ´Ù.
-//postcondition: ¸µÅ©µå¸®½ºÆ®¿¡¼­ cur°¡ °¡¸®Å°´Â ±¸Á¶Ã¼¸¦ »èÁ¦
+//precondition: curê°€ start, endë¥¼ í¬ì¸í„°í•˜ê³  ìˆìœ¼ë©´ ì•ˆ ëœë‹¤.
+//postcondition: ë§í¬ë“œë¦¬ìŠ¤íŠ¸ì—ì„œ curê°€ ê°€ë¦¬í‚¤ëŠ” êµ¬ì¡°ì²´ë¥¼ ì‚­ì œ
 void delete_l(){
     linked *p = cur;
     if(p == start)  return ;
@@ -180,8 +180,8 @@ void delete_l(){
     cur = cur -> front;
     free(p);
 }
-//precondition: ch´Â readdir·Î ÀĞÀº ÆÄÀÏÀÇ ÀÌ¸§À¸·Î NULLÀÌ¸é ¾È µÈ´Ù.
-//postcondition: µ¿ÀûÀ¸·Î ÇÒ´çµÈ ¸Ş¸ğ¸®¿¡ ÆÄÀÏ Á¤º¸¸¦ ÀúÀåÇÏ¿© ¸µÅ©µå¸®½ºÆ®¿¡ »ğÀÔÇÑ´Ù.
+//precondition: chëŠ” readdirë¡œ ì½ì€ íŒŒì¼ì˜ ì´ë¦„ìœ¼ë¡œ NULLì´ë©´ ì•ˆ ëœë‹¤.
+//postcondition: ë™ì ìœ¼ë¡œ í• ë‹¹ëœ ë©”ëª¨ë¦¬ì— íŒŒì¼ ì •ë³´ë¥¼ ì €ì¥í•˜ì—¬ ë§í¬ë“œë¦¬ìŠ¤íŠ¸ì— ì‚½ì…í•œë‹¤.
 void insert_l(char *ch){
     linked *p = (linked *)malloc(sizeof(linked));
     strcpy(p -> a, ch);
@@ -193,23 +193,23 @@ void insert_l(char *ch){
     stat(strbuf, &st);
     p -> list_size = st.st_size;
     p -> list_time = st.st_mtim.tv_sec;
-    sprintf(p -> list_change,"%s", ctime(&st.st_mtim.tv_sec));         //¼öÁ¤ ½Ã°£À» ¿äÀÏ/¿ù/ÀÏ/½Ã°£/³â ÇüÅÂ·Î ¹Ù²Ù¾î ¹®ÀÚ¿­¿¡ ÀúÀå
+    sprintf(p -> list_change,"%s", ctime(&st.st_mtim.tv_sec));         //ìˆ˜ì • ì‹œê°„ì„ ìš”ì¼/ì›”/ì¼/ì‹œê°„/ë…„ í˜•íƒœë¡œ ë°”ê¾¸ì–´ ë¬¸ìì—´ì— ì €ì¥
     p -> back = cur -> back;
     p -> front = cur;
     cur -> back -> front = p;
     cur -> back = p;
     cur = cur -> back;
 }
-//precondition: cur¿Í least°¡ ±³È¯ÇÏ°íÀÚ ÇÏ´Â ±¸Á¶Ã¼µéÀ» °¢°¢ Æ÷ÀÎÆ®ÇÏ°í ÀÖ¾î¾ßÇÑ´Ù.
-//postcondition: cur°¡ °¡¸®Å°°í ÀÖ´Â ±¸Á¶Ã¼¿Í least°¡ °¡¸®Å°°í ÀÖ´Â ±¸Á¶Ã¼ÀÇ ¼ø¼­¸¦ ¹Ù²Û´Ù.
-//               cur3Àº ±³È¯µÈ curÀÇ ÁÖ¼Ò°ªÀ» °¡Áø°í cur´Â ±³È¯µÈ leastÀÇ ÁÖ¼Ò°ªÀ» °¡Áö°Ô ÇÑ´Ù.
+//precondition: curì™€ leastê°€ êµí™˜í•˜ê³ ì í•˜ëŠ” êµ¬ì¡°ì²´ë“¤ì„ ê°ê° í¬ì¸íŠ¸í•˜ê³  ìˆì–´ì•¼í•œë‹¤.
+//postcondition: curê°€ ê°€ë¦¬í‚¤ê³  ìˆëŠ” êµ¬ì¡°ì²´ì™€ leastê°€ ê°€ë¦¬í‚¤ê³  ìˆëŠ” êµ¬ì¡°ì²´ì˜ ìˆœì„œë¥¼ ë°”ê¾¼ë‹¤.
+//               cur3ì€ êµí™˜ëœ curì˜ ì£¼ì†Œê°’ì„ ê°€ì§„ê³  curëŠ” êµí™˜ëœ leastì˜ ì£¼ì†Œê°’ì„ ê°€ì§€ê²Œ í•œë‹¤.
 void change_l(){
     linked *p;
     if(least -> clos == 1){
         least -> clos = 0;
         cur -> clos = 1;
     }
-    if(cur -> back == least){           //least°¡ cur¹Ù·Î ´ÙÀ½¿¡ ÀÖ´Â °æ¿ì
+    if(cur -> back == least){           //leastê°€ curë°”ë¡œ ë‹¤ìŒì— ìˆëŠ” ê²½ìš°
         cur -> front -> back = least;
         least -> back -> front = cur;
         p = cur -> front;
@@ -234,16 +234,16 @@ void change_l(){
     cur3 = cur;
     cur = least;
 }
-//precondition: curÀº start -> backÀÇ ÁÖ¼Ò°ªÀ» °¡Á®¾ß ÇÑ´Ù.
-//postcondition: ¸µÅ©µå ¸®½ºÆ®ÀÇ ÆÄÀÏµéÀ» tree viewÇü½ÄÀ¸·Î Ãâ·ÂÇÑ´Ù.
+//precondition: curì€ start -> backì˜ ì£¼ì†Œê°’ì„ ê°€ì ¸ì•¼ í•œë‹¤.
+//postcondition: ë§í¬ë“œ ë¦¬ìŠ¤íŠ¸ì˜ íŒŒì¼ë“¤ì„ tree viewí˜•ì‹ìœ¼ë¡œ ì¶œë ¥í•œë‹¤.
 void print_tree(){
     int i = 0;
     printw(" --- ");
-    getyx(stdscr, y, x); //ÇöÀç Ä¿¼­ ÁÂÇ¥ ±¸ÇÏ´Â ÇÔ¼ö
+    getyx(stdscr, y, x); //í˜„ì¬ ì»¤ì„œ ì¢Œí‘œ êµ¬í•˜ëŠ” í•¨ìˆ˜
     row = x - 3;
-    push(row);      //rowÁ¤º¸ stack¿¡ ÀúÀå
+    push(row);      //rowì •ë³´ stackì— ì €ì¥
     while(--termy > 0){
-        if(cur -> op == 1){             //¿­¸° µğ·ºÅä¸®°¡ ÀÖÀ» ¶§
+        if(cur -> op == 1){             //ì—´ë¦° ë””ë ‰í† ë¦¬ê°€ ìˆì„ ë•Œ
             if(cur -> front -> op != 1){
                 mvprintw(column, row, "\\");
                 
@@ -259,8 +259,8 @@ void print_tree(){
             cur = cur -> back;
             print_tree();
         }
-        else if(cur -> clos == 1){ //¿­¸° µğ·ºÅä¸®ÀÇ ¸¶Áö¸· ÆÄÀÏÀÏ ¶§
-            if(i == 0){                 //¿­¸° µğ·ºÅä¸® ÆÄÀÏÀÌ ÇÏ³ª¸¸ ÀÖÀ» ¶§
+        else if(cur -> clos == 1){ //ì—´ë¦° ë””ë ‰í† ë¦¬ì˜ ë§ˆì§€ë§‰ íŒŒì¼ì¼ ë•Œ
+            if(i == 0){                 //ì—´ë¦° ë””ë ‰í† ë¦¬ íŒŒì¼ì´ í•˜ë‚˜ë§Œ ìˆì„ ë•Œ
                 printw("%.*s",termx-1,cur -> a);
                 column = y + 1;
             }
@@ -275,8 +275,8 @@ void print_tree(){
                 getyx(stdscr, y, x);
                 column = y + 1;
             }
-            pop();          //ÇÏÀ§ µğ·ºÅä¸®¿¡¼­ »óÀ§ µğ·ºÅä¸®ÀÇ row°ªÀ¸·Î µ¹¾Æ°¡¼­ Ãâ·ÂÇÏ±â À§ÇÔ
-            if(check == 1){       //»óÀ§ µğ·ºÅä¸®°¡ °°Àº °æ·ÎÀÇ ÆÄÀÏ Áß ¸¶Áö¸· ÆÄÀÏÀÎÁö È®ÀÎ
+            pop();          //í•˜ìœ„ ë””ë ‰í† ë¦¬ì—ì„œ ìƒìœ„ ë””ë ‰í† ë¦¬ì˜ rowê°’ìœ¼ë¡œ ëŒì•„ê°€ì„œ ì¶œë ¥í•˜ê¸° ìœ„í•¨
+            if(check == 1){       //ìƒìœ„ ë””ë ‰í† ë¦¬ê°€ ê°™ì€ ê²½ë¡œì˜ íŒŒì¼ ì¤‘ ë§ˆì§€ë§‰ íŒŒì¼ì¸ì§€ í™•ì¸
                 pop();
                 row = tops();
                 check = 0;
@@ -308,19 +308,19 @@ void print_tree(){
     if(termy > 0)
         mvprintw(column - 1, row, "\\");
 }
-//precondition: cur2´Â µğ·ºÅä¸® ÆÄÀÏÀ» Æ÷ÀÎÆ®ÇÏ°í ÀÖ¾î¾ß ÇÏ°í, tp´Â ÇöÀç µğ·ºÅä¸® °æ·Î¸¦ ¹®ÀÚ¿­·Î °¡Áö°í ÀÖ¾î¾ß ÇÑ´Ù.
-//postcondition: µğ·ºÅä¸®¸¦ ¿­¾î¼­ ±× ¾È¿¡ ÀÖ´Â ÆÄÀÏµéÀÇ Á¤º¸¸¦ ¸µÅ©µå¸®½ºÆ®¿¡ ÀúÀåÇÑ´Ù.
-//               ¿­±â·Î ÇÑ µğ·ºÅä¸®ÀÇ op°ªÀ» 1·Î º¯°æ, ¿­¾î³õÀº µğ·ºÅä¸® ¾ÈÀÇ ÆÄÀÏµé Áß ¸¶Áö¸· ÆÄÀÏÀÇ °æ¿ì clos°ªÀ» 1·Î ÀúÀåÇÑ´Ù.
+//precondition: cur2ëŠ” ë””ë ‰í† ë¦¬ íŒŒì¼ì„ í¬ì¸íŠ¸í•˜ê³  ìˆì–´ì•¼ í•˜ê³ , tpëŠ” í˜„ì¬ ë””ë ‰í† ë¦¬ ê²½ë¡œë¥¼ ë¬¸ìì—´ë¡œ ê°€ì§€ê³  ìˆì–´ì•¼ í•œë‹¤.
+//postcondition: ë””ë ‰í† ë¦¬ë¥¼ ì—´ì–´ì„œ ê·¸ ì•ˆì— ìˆëŠ” íŒŒì¼ë“¤ì˜ ì •ë³´ë¥¼ ë§í¬ë“œë¦¬ìŠ¤íŠ¸ì— ì €ì¥í•œë‹¤.
+//               ì—´ê¸°ë¡œ í•œ ë””ë ‰í† ë¦¬ì˜ opê°’ì„ 1ë¡œ ë³€ê²½, ì—´ì–´ë†“ì€ ë””ë ‰í† ë¦¬ ì•ˆì˜ íŒŒì¼ë“¤ ì¤‘ ë§ˆì§€ë§‰ íŒŒì¼ì˜ ê²½ìš° closê°’ì„ 1ë¡œ ì €ì¥í•œë‹¤.
 void open_dir(){
     cur = cur2;
-    snprintf(dp, PATH_MAX*2, "%s/%s", tp, cur -> a);           //dp´Â ¿­·Á°í ÇÏ´Â µğ·ºÅä¸® °æ·Î, tp´Â ÇöÀç µğ·ºÅä¸® °æ·Î
+    snprintf(dp, PATH_MAX*2, "%s/%s", tp, cur -> a);           //dpëŠ” ì—´ë ¤ê³  í•˜ëŠ” ë””ë ‰í† ë¦¬ ê²½ë¡œ, tpëŠ” í˜„ì¬ ë””ë ‰í† ë¦¬ ê²½ë¡œ
     cur -> op = 1;
-    DIR *dirp;      //µğ·ºÅä¸® Æ÷ÀÎÅÍ
-    struct dirent *diritem;    //µğ·ºÅä¸® Ç×¸ñ Æ÷ÀÎÅÍ
+    DIR *dirp;      //ë””ë ‰í† ë¦¬ í¬ì¸í„°
+    struct dirent *diritem;    //ë””ë ‰í† ë¦¬ í•­ëª© í¬ì¸í„°
     dirp = opendir(dp);
     strcpy(tp, dp);
     while((diritem=readdir(dirp)) != NULL){
-        if(strncmp(diritem -> d_name, ".", 1) != 0){        //.À¸·Î ½ÃÀÛÇÏ´Â ÆÄÀÏ Á¦¿ÜÇÏ°í ¸µÅ©µå ¸®½ºÆ®¿¡ ÀúÀå
+        if(strncmp(diritem -> d_name, ".", 1) != 0){        //.ìœ¼ë¡œ ì‹œì‘í•˜ëŠ” íŒŒì¼ ì œì™¸í•˜ê³  ë§í¬ë“œ ë¦¬ìŠ¤íŠ¸ì— ì €ì¥
             temp = diritem -> d_type;
             char *str = diritem->d_name;
             snprintf(strbuf, PATH_MAX*2, "%s/%s",tp, str);
@@ -336,10 +336,10 @@ void open_dir(){
         strcpy(dp, tp);
     }
 }
-//precondition:  cur2´Â ¿­¾î³õÀº µğ·ºÅä¸® ¾ÈÀÇ ÆÄÀÏµé Áß Ã¹¹ø¤Š ÆÄÀÏÀ» Æ÷ÀÎÆ®ÇÏ°í ÀÖ¾î¾ßÇÑ´Ù. 
-//               dp´Â ÇöÀç µğ·ºÅä¸®ÀÇ °æ·Î¸¦ ¹®ÀÚ¿­·Î °¡Áö°í ÀÖ¾î¾ß ÇÑ´Ù.
-//postcondition: ¿­¾î³õÀº µğ·ºÅä¸®ÀÇ ÆÄÀÏµéÀ» ¸µÅ©µå¸®½º¿¡¼­ »èÁ¦ÇÏ°í ¿­¾ú¾ú´ø µğ·ºÅä¸®ÀÇ op°ªÀ» 0À¸·Î º¯°æÇÑ´Ù.
-//               cur2´Â ´İÀº µğ·ºÅä¸®¸¦ Æ÷ÀÎÆ®ÇÏ°í ÀÖ°í, ¹Ù²ï °æ·Î¸¦ tp¿Í dp¿¡ ¹®ÀÚ¿­·Î ÀúÀåÇÑ´Ù.
+//precondition:  cur2ëŠ” ì—´ì–´ë†“ì€ ë””ë ‰í† ë¦¬ ì•ˆì˜ íŒŒì¼ë“¤ ì¤‘ ì²«ë²ˆì¨° íŒŒì¼ì„ í¬ì¸íŠ¸í•˜ê³  ìˆì–´ì•¼í•œë‹¤. 
+//               dpëŠ” í˜„ì¬ ë””ë ‰í† ë¦¬ì˜ ê²½ë¡œë¥¼ ë¬¸ìì—´ë¡œ ê°€ì§€ê³  ìˆì–´ì•¼ í•œë‹¤.
+//postcondition: ì—´ì–´ë†“ì€ ë””ë ‰í† ë¦¬ì˜ íŒŒì¼ë“¤ì„ ë§í¬ë“œë¦¬ìŠ¤ì—ì„œ ì‚­ì œí•˜ê³  ì—´ì—ˆì—ˆë˜ ë””ë ‰í† ë¦¬ì˜ opê°’ì„ 0ìœ¼ë¡œ ë³€ê²½í•œë‹¤.
+//               cur2ëŠ” ë‹«ì€ ë””ë ‰í† ë¦¬ë¥¼ í¬ì¸íŠ¸í•˜ê³  ìˆê³ , ë°”ë€ ê²½ë¡œë¥¼ tpì™€ dpì— ë¬¸ìì—´ë¡œ ì €ì¥í•œë‹¤.
 void close_dir(){
     cur = cur2 -> front;
     cur -> op = 0;
@@ -357,10 +357,10 @@ void close_dir(){
     sprintf(tp, "%.*s", k, dp);                                
     strcpy(dp, tp);
 }
-//precondition: 1 <= ch <= 3 ÀÌ¾î¾ßÇÏ°í cur´Â NULLÀÌ°Å³ª Á¤·ÄÇÏ°íÀÚ ÇÏ´Â ÆÄÀÏµé Áß ¸¶Áö¸· ÆÄÀÏÀ» Æ÷ÀÎÆ®ÇÏ°í ÀÖÀ¸¸é ¾È µÈ´Ù. 
-//              cur3Àº cur -> backÀ» Æ÷ÀÎÆ®ÇÏ°í ÀÖ¾î¾ßÇÑ´Ù.
-//postcondition: ch°ª¿¡ µû¶ó ÆÄÀÏÀÌ¸§, Å©±â, ¼öÁ¤³¯Â¥ Áß ÇÏ³ª¸¦ ±âÁØÀ¸·Î ¼±ÅÃÇÏ¿©
-//               cur°¡ Æ÷ÀÎÆ®ÇÏ°í ÀÖ´Â ÆÄÀÏºÎÅÍ ÇöÀç µğ·ºÅä¸®ÀÇ ¸¶Áö¸· ÆÄÀÏ±îÁö Áß ±âÁØ°ªÀÌ °¡Àå ÀÛÀº °ªÀÇ ÆÄÀÏÀÌ cur°¡ °¡¸®Å°´Â À§Ä¡¿¡ µé¾î°£´Ù.
+//precondition: 1 <= ch <= 3 ì´ì–´ì•¼í•˜ê³  curëŠ” NULLì´ê±°ë‚˜ ì •ë ¬í•˜ê³ ì í•˜ëŠ” íŒŒì¼ë“¤ ì¤‘ ë§ˆì§€ë§‰ íŒŒì¼ì„ í¬ì¸íŠ¸í•˜ê³  ìˆìœ¼ë©´ ì•ˆ ëœë‹¤. 
+//              cur3ì€ cur -> backì„ í¬ì¸íŠ¸í•˜ê³  ìˆì–´ì•¼í•œë‹¤.
+//postcondition: chê°’ì— ë”°ë¼ íŒŒì¼ì´ë¦„, í¬ê¸°, ìˆ˜ì •ë‚ ì§œ ì¤‘ í•˜ë‚˜ë¥¼ ê¸°ì¤€ìœ¼ë¡œ ì„ íƒí•˜ì—¬
+//               curê°€ í¬ì¸íŠ¸í•˜ê³  ìˆëŠ” íŒŒì¼ë¶€í„° í˜„ì¬ ë””ë ‰í† ë¦¬ì˜ ë§ˆì§€ë§‰ íŒŒì¼ê¹Œì§€ ì¤‘ ê¸°ì¤€ê°’ì´ ê°€ì¥ ì‘ì€ ê°’ì˜ íŒŒì¼ì´ curê°€ ê°€ë¦¬í‚¤ëŠ” ìœ„ì¹˜ì— ë“¤ì–´ê°„ë‹¤.
 void sort_type(char ch){
     if(ch == '1'){
         while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
@@ -399,8 +399,8 @@ void sort_type(char ch){
             change_l();
     }
 }
-//precondition: cur´Â ÇöÀç µğ·ºÅä¸®¾ÈÀÇ Ã¹¹øÂ° ÆÄÀÏÀ» Æ÷ÀÎÆ®ÇÏ°í ÀÖ¾î¾ß ÇÑ´Ù.
-//postcondition: ÇöÀç µğ·ºÅä¸®¾ÈÀÇ ÆÄÀÏµé Áß pinÀ¸·Î °íÁ¤µÈ ÆÄÀÏµéÀ» ¸Ç ¾ÕÀ¸·Î º¸³»°í cur´Â pinÀ¸·Î °íÁ¤µÇÁö ¾ÊÀº Ã¹¹øÂ° ÆÄÀÏÀ» °¡¸®Å²´Ù.
+//precondition: curëŠ” í˜„ì¬ ë””ë ‰í† ë¦¬ì•ˆì˜ ì²«ë²ˆì§¸ íŒŒì¼ì„ í¬ì¸íŠ¸í•˜ê³  ìˆì–´ì•¼ í•œë‹¤.
+//postcondition: í˜„ì¬ ë””ë ‰í† ë¦¬ì•ˆì˜ íŒŒì¼ë“¤ ì¤‘ pinìœ¼ë¡œ ê³ ì •ëœ íŒŒì¼ë“¤ì„ ë§¨ ì•ìœ¼ë¡œ ë³´ë‚´ê³  curëŠ” pinìœ¼ë¡œ ê³ ì •ë˜ì§€ ì•Šì€ ì²«ë²ˆì§¸ íŒŒì¼ì„ ê°€ë¦¬í‚¨ë‹¤.
 void except_pin(){
     cur3 = cur;
     while(cur -> back != NULL && cur -> front -> clos != 1){
@@ -414,8 +414,8 @@ void except_pin(){
     }
     cur = cur3;
 }
-//precondition: cur2°¡ NULL°ªÀ» °¡Áö°Å³ª ÇöÀç µğ·ºÅä¸® ¹ÛÀÇ ÆÄÀÏÀ» Æ÷ÀÎÆ®ÇÏ¸é ¾È µÈ´Ù.
-//postcondition: ÇöÀç µğ·ºÅä¸®¾ÈÀÇ ÆÄÀÏÀ» ch°ª¿¡ µû¶ó ÆÄÀÏÀÌ¸§, Å©±â, ¼öÁ¤³¯Â¥ Áß ÇÏ³ª¸¦ ¼±ÅÃÇÏ¿© ¿À¸§Â÷¼øÀ¸·Î Á¤·ÄÇÑ´Ù.
+//precondition: cur2ê°€ NULLê°’ì„ ê°€ì§€ê±°ë‚˜ í˜„ì¬ ë””ë ‰í† ë¦¬ ë°–ì˜ íŒŒì¼ì„ í¬ì¸íŠ¸í•˜ë©´ ì•ˆ ëœë‹¤.
+//postcondition: í˜„ì¬ ë””ë ‰í† ë¦¬ì•ˆì˜ íŒŒì¼ì„ chê°’ì— ë”°ë¼ íŒŒì¼ì´ë¦„, í¬ê¸°, ìˆ˜ì •ë‚ ì§œ ì¤‘ í•˜ë‚˜ë¥¼ ì„ íƒí•˜ì—¬ ì˜¤ë¦„ì°¨ìˆœìœ¼ë¡œ ì •ë ¬í•œë‹¤.
 void sort(char ch){
     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -433,8 +433,8 @@ void sort(char ch){
     snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
     strcpy(cur2 -> a, strbuf);
 }
-//precondition: tp´Â ÇöÀç µğ·ºÅä¸®ÀÇ °æ·Î¸¦ ¹®ÀÚ¿­·Î °¡Áö°í ÀÖ¾î¾ß ÇÑ´Ù.
-//postcondition: SortingÀ» ¾î¶² ±âÁØÀ¸·Î ÇÒ °ÍÀÎÁö ¸Ş´º¸¦ È­¸é¿¡ Ãâ·ÂÇØÁÖ°í ch°ªÀ» ÀÔ·Â¹Ş°í Á¤·Ä ±â´ÉÀ» ½ÇÇàÇÑ´Ù.
+//precondition: tpëŠ” í˜„ì¬ ë””ë ‰í† ë¦¬ì˜ ê²½ë¡œë¥¼ ë¬¸ìì—´ë¡œ ê°€ì§€ê³  ìˆì–´ì•¼ í•œë‹¤.
+//postcondition: Sortingì„ ì–´ë–¤ ê¸°ì¤€ìœ¼ë¡œ í•  ê²ƒì¸ì§€ ë©”ë‰´ë¥¼ í™”ë©´ì— ì¶œë ¥í•´ì£¼ê³  chê°’ì„ ì…ë ¥ë°›ê³  ì •ë ¬ ê¸°ëŠ¥ì„ ì‹¤í–‰í•œë‹¤.
 void sorting_l(){
     char ch;
     time_t lasttime;
@@ -463,8 +463,8 @@ void sorting_l(){
     }
     clear();
 }
-//precondition: cur2°¡ NULL°ªÀ» °¡Áö°Å³ª ÇöÀç µğ·ºÅä¸® ¹ÛÀÇ ÆÄÀÏÀ» Æ÷ÀÎÆ®ÇÏ¸é ¾È µÈ´Ù.
-//postcondition: PinÀ¸·Î °íÁ¤µÈ ÆÄÀÏµéÀÇ ¸ñ·ÏÀ» detail ¿·¿¡ Ãâ·ÂÇØÁØ´Ù.
+//precondition: cur2ê°€ NULLê°’ì„ ê°€ì§€ê±°ë‚˜ í˜„ì¬ ë””ë ‰í† ë¦¬ ë°–ì˜ íŒŒì¼ì„ í¬ì¸íŠ¸í•˜ë©´ ì•ˆ ëœë‹¤.
+//postcondition: Pinìœ¼ë¡œ ê³ ì •ëœ íŒŒì¼ë“¤ì˜ ëª©ë¡ì„ detail ì˜†ì— ì¶œë ¥í•´ì¤€ë‹¤.
 void print_pin(){
     int i = 3;
     mvprintw(0,86,"------------------------------------------\n");
@@ -491,20 +491,20 @@ void print_pin(){
     mvprintw(i,85,"|                                          |");
     mvprintw(i + 1,86,"------------------------------------------\n");
 }
-//precondition: cur2°¡ NULL°ªÀ» °¡Áö°Å³ª ÇöÀç µğ·ºÅä¸® ¹ÛÀÇ ÆÄÀÏÀ» Æ÷ÀÎÆ®ÇÏ¸é ¾È µÈ´Ù.
-//postcondition: ÇöÀç ()·Î °¡¸®Å°°í ÀÖ´Â ÆÄÀÏµéÀ» p¸¦ ´­·¯¼­ Pin list¿¡ Ãß°¡ÇÏ°Å³ª »¬ ¼ö ÀÖ°í 1´©¸£¸é Pin ±â´ÉÀ» Á¾·áÇÑ´Ù.
+//precondition: cur2ê°€ NULLê°’ì„ ê°€ì§€ê±°ë‚˜ í˜„ì¬ ë””ë ‰í† ë¦¬ ë°–ì˜ íŒŒì¼ì„ í¬ì¸íŠ¸í•˜ë©´ ì•ˆ ëœë‹¤.
+//postcondition: í˜„ì¬ ()ë¡œ ê°€ë¦¬í‚¤ê³  ìˆëŠ” íŒŒì¼ë“¤ì„ pë¥¼ ëˆŒëŸ¬ì„œ Pin listì— ì¶”ê°€í•˜ê±°ë‚˜ ëº„ ìˆ˜ ìˆê³  1ëˆ„ë¥´ë©´ Pin ê¸°ëŠ¥ì„ ì¢…ë£Œí•œë‹¤.
 void use_pin(){
     int ch;
     time_t lasttime;
-    while(1)    //Å»Ãâ Á¶°Ç-> 1 ´­·¶À»¶§.
+    while(1)    //íƒˆì¶œ ì¡°ê±´-> 1 ëˆŒë €ì„ë•Œ.
     {
-        getmaxyx(curscr,termy,termx);     //°¡·Î¼¼·Î ±¸ÇÏ±â
+        getmaxyx(curscr,termy,termx);     //ê°€ë¡œì„¸ë¡œ êµ¬í•˜ê¸°
         lasttime=time(NULL);
         clear();
         switch(ch)
         {
             case KEY_DOWN:
-            //TODO: Ä¿¼­ ´Ù¿î
+            //TODO: ì»¤ì„œ ë‹¤ìš´
             if(cur2 -> back -> back != NULL){
                 if(cur2 -> clos == 0){
                     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
@@ -517,7 +517,7 @@ void use_pin(){
             }
             break;
             case KEY_UP:
-            //TODO: Ä¿¼­ ¾÷
+            //TODO: ì»¤ì„œ ì—…
             if(cur2 -> front != start){
                 if(cur2 -> front -> op == 0){
                     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
@@ -541,15 +541,15 @@ void use_pin(){
         if (ch == '1')
             break;
         cur = start -> back;
-        print_detail(); // ÇöÀç µğ·ºÅä¸® ¾È¿¡ ÀÖ´Â ÆÄÀÏ¸¸ ÀÚ¼¼ÇÏ°Ô Ãâ·Â;
+        print_detail(); // í˜„ì¬ ë””ë ‰í† ë¦¬ ì•ˆì— ìˆëŠ” íŒŒì¼ë§Œ ìì„¸í•˜ê²Œ ì¶œë ¥;
         print_pin();
         refresh();
-        while((ch=getch())==ERR && time(NULL)-lasttime<3);   //Å° ÀÔ·Â µÉ¶§±îÁö ´ë±â
+        while((ch=getch())==ERR && time(NULL)-lasttime<3);   //í‚¤ ì…ë ¥ ë ë•Œê¹Œì§€ ëŒ€ê¸°
     }
     clear();
 }
-//precondition: tp´Â ÇöÀç µğ·ºÅä¸®ÀÇ °æ·Î¸¦ ¹®ÀÚ¿­·Î °¡Áö°í ÀÖ¾î¾ß ÇÑ´Ù.
-//postcondition: Pin±â´ÉÀ» »ç¿ëÇÒ °ÍÀÎÁö ¸Ş´º·Î Ãâ·ÂÇÏ°í 1À» ´©¸£¸é Pin±â´É°ú Á¤·Ä ±â´ÉÀ» ½ÇÇà, 2¸¦ ´©¸£¸é Á¤·Ä ±â´É¸¸ ½ÇÇàÇÑ´Ù.
+//precondition: tpëŠ” í˜„ì¬ ë””ë ‰í† ë¦¬ì˜ ê²½ë¡œë¥¼ ë¬¸ìì—´ë¡œ ê°€ì§€ê³  ìˆì–´ì•¼ í•œë‹¤.
+//postcondition: Pinê¸°ëŠ¥ì„ ì‚¬ìš©í•  ê²ƒì¸ì§€ ë©”ë‰´ë¡œ ì¶œë ¥í•˜ê³  1ì„ ëˆ„ë¥´ë©´ Pinê¸°ëŠ¥ê³¼ ì •ë ¬ ê¸°ëŠ¥ì„ ì‹¤í–‰, 2ë¥¼ ëˆ„ë¥´ë©´ ì •ë ¬ ê¸°ëŠ¥ë§Œ ì‹¤í–‰í•œë‹¤.
 void sorting_pin(){
     char ch;
     time_t lasttime;
@@ -573,8 +573,8 @@ void sorting_pin(){
         while((ch=getch())==ERR && time(NULL)-lasttime<3);
     }
 }
-//precondition: cur2°¡ NULL°ªÀ» °¡Áö°Å³ª ÇöÀç µğ·ºÅä¸® ¹ÛÀÇ ÆÄÀÏÀ» Æ÷ÀÎÆ®ÇÏ¸é ¾È µÈ´Ù.
-//postcondition: ÇöÀç µğ·ºÅä¸®ÀÇ ÆÄÀÏµéÀÇ ÀÌ¸§, Å©±â, ¼öÁ¤³¯Â¥¸¦ detailÇÏ°Ô È­¸é¿¡ Ãâ·ÂÇÑ´Ù.
+//precondition: cur2ê°€ NULLê°’ì„ ê°€ì§€ê±°ë‚˜ í˜„ì¬ ë””ë ‰í† ë¦¬ ë°–ì˜ íŒŒì¼ì„ í¬ì¸íŠ¸í•˜ë©´ ì•ˆ ëœë‹¤.
+//postcondition: í˜„ì¬ ë””ë ‰í† ë¦¬ì˜ íŒŒì¼ë“¤ì˜ ì´ë¦„, í¬ê¸°, ìˆ˜ì •ë‚ ì§œë¥¼ detailí•˜ê²Œ í™”ë©´ì— ì¶œë ¥í•œë‹¤.
 void print_detail(){
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)
@@ -591,20 +591,20 @@ void print_detail(){
         cur = cur -> back;
     }
 }
-//precondition: cur2°¡ NULL°ªÀ» °¡Áö°Å³ª ÇöÀç µğ·ºÅä¸® ¹ÛÀÇ ÆÄÀÏÀ» Æ÷ÀÎÆ®ÇÏ¸é ¾È µÈ´Ù. tp´Â ÇöÀç µğ·ºÅä¸®ÀÇ °æ·Î¸¦ ¹®ÀÚ¿­·Î °¡Áö°í ÀÖ¾î¾ß ÇÑ´Ù.
-//postcondition: ¸Ş´º¸¦ Ãâ·ÂÇÏ°í ch°ª¿¡ µû¶ó 2¸¦ ´©¸£¸é Á¤·Ä ±â´ÉÀ» ½ÇÇà, 3À» ´©¸£¸é °Ë»ö±â´ÉÀ» ½ÇÇàÇÏ¸ç 1À» ´©¸£¸é detail ±â´ÉÀ» Á¾·áÇÑ´Ù.
+//precondition: cur2ê°€ NULLê°’ì„ ê°€ì§€ê±°ë‚˜ í˜„ì¬ ë””ë ‰í† ë¦¬ ë°–ì˜ íŒŒì¼ì„ í¬ì¸íŠ¸í•˜ë©´ ì•ˆ ëœë‹¤. tpëŠ” í˜„ì¬ ë””ë ‰í† ë¦¬ì˜ ê²½ë¡œë¥¼ ë¬¸ìì—´ë¡œ ê°€ì§€ê³  ìˆì–´ì•¼ í•œë‹¤.
+//postcondition: ë©”ë‰´ë¥¼ ì¶œë ¥í•˜ê³  chê°’ì— ë”°ë¼ 2ë¥¼ ëˆ„ë¥´ë©´ ì •ë ¬ ê¸°ëŠ¥ì„ ì‹¤í–‰, 3ì„ ëˆ„ë¥´ë©´ ê²€ìƒ‰ê¸°ëŠ¥ì„ ì‹¤í–‰í•˜ë©° 1ì„ ëˆ„ë¥´ë©´ detail ê¸°ëŠ¥ì„ ì¢…ë£Œí•œë‹¤.
 void detail(){
     int ch;
     time_t lasttime;
-    while(1)    //Å»Ãâ Á¶°Ç-> µÚ·Î°¡±â ´­·¶À»¶§.
+    while(1)    //íƒˆì¶œ ì¡°ê±´-> ë’¤ë¡œê°€ê¸° ëˆŒë €ì„ë•Œ.
     {
-        getmaxyx(curscr,termy,termx);     //°¡·Î¼¼·Î ±¸ÇÏ±â
+        getmaxyx(curscr,termy,termx);     //ê°€ë¡œì„¸ë¡œ êµ¬í•˜ê¸°
         lasttime=time(NULL);
         clear();
         switch(ch)
         {
             case KEY_DOWN:
-            //TODO: Ä¿¼­ ´Ù¿î
+            //TODO: ì»¤ì„œ ë‹¤ìš´
             if(cur2 -> back -> back != NULL){
                 if(cur2 -> clos == 0){
                     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
@@ -617,7 +617,7 @@ void detail(){
             }
             break;
             case KEY_UP:
-            //TODO: Ä¿¼­ ¾÷
+            //TODO: ì»¤ì„œ ì—…
             if(cur2 -> front != start){
                 if(cur2 -> front -> op == 0){
                     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
@@ -630,20 +630,20 @@ void detail(){
             }
             break;
             case '2':
-            sorting_pin();        //Á¤·Ä ±â´É
+            sorting_pin();        //ì •ë ¬ ê¸°ëŠ¥
             break;
             case '3':
 			use_search();
             break;
         }
         printw("| MENU | 1. Go Back\t2. Sorting\t3. Searching\n\n");
-        printw("%.*s\n",termx-1, tp);     //ÇöÀç °æ·Î°¡ ¾îµğÀÎÁö Ãâ·Â
-        if (ch == '1') //left´©¸£¸é tree view·Î µ¹¾Æ°¨
+        printw("%.*s\n",termx-1, tp);     //í˜„ì¬ ê²½ë¡œê°€ ì–´ë””ì¸ì§€ ì¶œë ¥
+        if (ch == '1') //leftëˆ„ë¥´ë©´ tree viewë¡œ ëŒì•„ê°
             break;
         cur = start -> back;
-        print_detail(); // ÇöÀç µğ·ºÅä¸® ¾È¿¡ ÀÖ´Â ÆÄÀÏ¸¸ ÀÚ¼¼ÇÏ°Ô Ãâ·Â;
+        print_detail(); // í˜„ì¬ ë””ë ‰í† ë¦¬ ì•ˆì— ìˆëŠ” íŒŒì¼ë§Œ ìì„¸í•˜ê²Œ ì¶œë ¥;
         refresh();
-        while((ch=getch())==ERR && time(NULL)-lasttime<3);   //Å° ÀÔ·Â µÉ¶§±îÁö ´ë±â
+        while((ch=getch())==ERR && time(NULL)-lasttime<3);   //í‚¤ ì…ë ¥ ë ë•Œê¹Œì§€ ëŒ€ê¸°
     }
     clear();
 }
@@ -656,22 +656,22 @@ int main(){
     noecho();   //no echo of inputs
     nodelay(stdscr,TRUE);
     keypad(stdscr,TRUE);    //enable keypad, arrows
-    getcwd(wd,PATH_MAX);    //ÇöÀç µğ·ºÅä¸® °¡Á®¿À±â
-    save_tree(); //ÆÄÀÏ Á¤º¸ ¸µÅ©µå¸®½ºÆ®¿¡ ÀúÀå
+    getcwd(wd,PATH_MAX);    //í˜„ì¬ ë””ë ‰í† ë¦¬ ê°€ì ¸ì˜¤ê¸°
+    save_tree(); //íŒŒì¼ ì •ë³´ ë§í¬ë“œë¦¬ìŠ¤íŠ¸ì— ì €ì¥
     cur2 = end -> front;
     snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
     strcpy(cur2 -> a, strbuf);
-    strcpy(tp, wd);         //wd´Â ÃÖ»óÀ§ µğ·ºÅä¸® °æ·Î·Î ¹Ù²îÁö ¾ÊÀ½
-    while(1)    //Å»Ãâ Á¶°Ç-> x´­·¶À»¶§.
+    strcpy(tp, wd);         //wdëŠ” ìµœìƒìœ„ ë””ë ‰í† ë¦¬ ê²½ë¡œë¡œ ë°”ë€Œì§€ ì•ŠìŒ
+    while(1)    //íƒˆì¶œ ì¡°ê±´-> xëˆŒë €ì„ë•Œ.
     {
-        getmaxyx(curscr,termy,termx);     //°¡·Î¼¼·Î ±¸ÇÏ±â
+        getmaxyx(curscr,termy,termx);     //ê°€ë¡œì„¸ë¡œ êµ¬í•˜ê¸°
         lasttime=time(NULL);
         clear();
-        //printw("%.*s\n",termx-1, tp);     //ÇöÀç °æ·Î°¡ ¾îµğÀÎÁö Ãâ·Â
+        //printw("%.*s\n",termx-1, tp);     //í˜„ì¬ ê²½ë¡œê°€ ì–´ë””ì¸ì§€ ì¶œë ¥
         switch(ch)
         {
             case KEY_DOWN:
-            //TODO: Ä¿¼­ ´Ù¿î
+            //TODO: ì»¤ì„œ ë‹¤ìš´
             if(cur2 -> back -> back != NULL){
                 if(cur2 -> clos == 0){
                     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
@@ -684,7 +684,7 @@ int main(){
             }
             break;
             case KEY_UP:
-            //TODO: Ä¿¼­ ¾÷
+            //TODO: ì»¤ì„œ ì—…
             if(cur2 -> front != start){
                 if(cur2 -> front -> op == 0){
                     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
@@ -697,39 +697,39 @@ int main(){
             }
             break;
             case KEY_LEFT:
-            //TODO: Ä¿¼­ ¿ŞÂÊ(ÀÌÀü À§Ä¡)
+            //TODO: ì»¤ì„œ ì™¼ìª½(ì´ì „ ìœ„ì¹˜)
             if(cur2 -> front -> op != 0){
-                close_dir();        //µğ·ºÅä¸® ´İ±â
+                close_dir();        //ë””ë ‰í† ë¦¬ ë‹«ê¸°
                 snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
                 strcpy(cur2 -> a, strbuf);
             }
             break;
             case KEY_RIGHT:
-            //TODO: Ä¿¼­ ¿À¸¥ÂÊ(µğ·ºÅä¸® µé¾î°¡±â/µ¿ÀÛ¾øÀ½)
+            //TODO: ì»¤ì„œ ì˜¤ë¥¸ìª½(ë””ë ‰í† ë¦¬ ë“¤ì–´ê°€ê¸°/ë™ì‘ì—†ìŒ)
             if(cur2 -> type == DT_DIR && cur2 -> op == 0){
                 snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
                 strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
                 cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                open_dir();         //µğ·ºÅä¸® ¿­±â
+                open_dir();         //ë””ë ‰í† ë¦¬ ì—´ê¸°
                 if(cur2 -> op == 1)
                     cur2 = cur2 -> back;
                 snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
                 strcpy(cur2 -> a, strbuf);
             }
             break;
-            case '1':   //1¹ø ´©¸£¸é detail ¸ğµå·Î ¹Ù²ñ
+            case '1':   //1ë²ˆ ëˆ„ë¥´ë©´ detail ëª¨ë“œë¡œ ë°”ë€œ
             detail();
             break;
         }
-        if (ch == EXIT_KEY) //ÇÁ·Î±×·¥ Á¾·á
+        if (ch == EXIT_KEY) //í”„ë¡œê·¸ë¨ ì¢…ë£Œ
             break;
         printw("| MENU | 1. See Detail\t\tx. Exit\n\n");
         snprintf(strbuf,PATH_MAX,"%s",wd);
         printw("%.*s",termx-1,strbuf);
         cur = start -> back;
-        print_tree(); // tree view Çü½ÄÀ¸·Î Ãâ·Â
+        print_tree(); // tree view í˜•ì‹ìœ¼ë¡œ ì¶œë ¥
         refresh();
-        while((ch=getch())==ERR && time(NULL)-lasttime<3);   //Å° ÀÔ·Â µÉ¶§±îÁö ´ë±â
+        while((ch=getch())==ERR && time(NULL)-lasttime<3);   //í‚¤ ì…ë ¥ ë ë•Œê¹Œì§€ ëŒ€ê¸°
     }
     endwin();
     return 0;
