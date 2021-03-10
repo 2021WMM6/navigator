@@ -106,7 +106,7 @@ void get_name(){
         select_search_list();
     }
     else{
-        mvprintw(3,86,"name not found");
+        mvprintw(3,86,"name not found : press enter to exit");
         refresh();
         getch();
         nodelay(stdscr,TRUE);
@@ -133,7 +133,7 @@ void print_search_list(){
         cur = cur -> back;
     }
     mvprintw(i,85,"|                                          |");
-    mvprintw(i,85,"|         exit : press the button 1        |");
+    mvprintw(i,85,"|           press button 1 to exit         |");
     mvprintw(i + 1,86,"------------------------------------------\n");
 }
 //precondition: cur2가 NULL값을 가지면 안 된다.
