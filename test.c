@@ -3,14 +3,15 @@
 int pop(){return top == 0 ? -1 : stack[--top];}
 void push(int a){stack[top++] = a;}
 int tops(){return top == 0 ? -1 : stack[top - 1];}
-
+//precondition: cur2가 NULL값을 가지면 안 된다. name이 검색하고자 하는 키워드를 문자열로 저장하고 있어야 한다. 
+//postcondition: 링크드리스트에서 
 void search(char name[100]){
     temp = 0;
     char *str;
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)
         cur = cur -> front;
-    while(cur -> back -> back != NULL && cur -> clos != 1){
+    while(cur -> back != NULL && cur -> front -> clos != 1){
         str = cur -> a;
         while(*str){
             if(strncmp(str, name, strlen(name)) == 0){
