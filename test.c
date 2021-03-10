@@ -28,6 +28,8 @@ void search(char name[100]){
         cur = cur -> back;
     }
 }
+//precondition: cur2가 NULL값을 가지면 안 된다.
+//postcondition: 박스 안에 출력된 찾은 파일들 중에서 키보드를 통해 ()로 내가 원하는 cur2가 포인트한 후 '1'을 누르면 종료된다.
 void select_search_list(){
     int ch;
     time_t lasttime;
@@ -83,6 +85,10 @@ void select_search_list(){
     }
     clear();
 }
+//precondition: cur2가 NULL값이면 안 된다.
+//postcondition: 입력창을 출력해주고 키워드를 입력받는다.
+//               search()함수를 실행시켜주고 찾은 파일이 있으면 select_search_list()함수를 실행하고, 파일이 없으면 name not found를 출력해준다.
+//               cur2가 가리키는 파일에 ()를 붙여준다.
 void get_name(){
     char name1[100];
     mvprintw(0,86,"------------------------------------------\n");
@@ -111,6 +117,8 @@ void get_name(){
         return;
     }
 }
+//precondition: cur2가 NULL값을 가지면 안 된다.
+//postcondition: 화면에 검색된 이름들을 박스안에 차례대로 출력해준다.
 void print_search_list(){
     int i = 3;
     cur = cur2;
@@ -127,6 +135,8 @@ void print_search_list(){
     mvprintw(i,85,"|                                          |");
     mvprintw(i + 1,86,"------------------------------------------\n");
 }
+//precondition: cur2가 NULL값을 가지면 안 된다.
+//postcondition: detail 정보를 옆에 출력해준 상태에서 searching 기능을 실행시켜 주고 기능이 끝나면 화면을 clear해 준다.
 void use_search(){
     int ch;
     time_t lasttime;
@@ -136,7 +146,7 @@ void use_search(){
     getmaxyx(curscr,termy,termx);     //가로세로 구하기
     lasttime=time(NULL);
     clear();
-    printw("| MENU | 1. Go Back\t2. Sorting\t3. Searching\n\n");
+    printw("| MENU | 1. Go Back\n\n");
     printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
     print_detail();
     get_name();
