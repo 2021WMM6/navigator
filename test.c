@@ -147,7 +147,7 @@ void use_search(){
     getmaxyx(curscr,termy,termx);     //가로세로 구하기
     lasttime=time(NULL);
     clear();
-    printw("| MENU | 1. Go Back\n\n");
+    printw("| MENU | 1. Go Back\t2. Sorting\t3. Searching\t4. Editing\n\n");
     printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
     print_detail();
     get_name();
@@ -451,9 +451,9 @@ void sort(char ch){
 void sorting_l(){
     char ch;
     time_t lasttime;
-    printw("| MENU | 1. Go Back\t2. Sorting\n\n");
+    printw("| MENU | 1. Go Back\t2. Sorting\t3. Searching\t4. Editing\n\n");
     printw("%.*s\n",termx-1, tp);
-    printw("\n1. File Name\n2. File Type\n3. File Type\n4. Last Modification\n");
+    printw("\n1. File Name\n2. File Type\n3. Size\n4. Last Modification\n");
     while(1){
         if(ch == '1'){
             sort(ch);
@@ -566,7 +566,7 @@ void use_pin(){
 void sorting_pin(){
     char ch;
     time_t lasttime;
-    printw("| MENU | 1. Go Back\t2. Sorting\n\n");
+    printw("| MENU | 1. Go Back\t2. Sorting\t3. Searching\t4. Editing\n\n");
     printw("%.*s\n",termx-1, tp);
     printw("\n1. Use pin\n2. Don't use pin\n");
     while(1){
@@ -603,6 +603,27 @@ void print_detail(){
         }
         cur = cur -> back;
     }
+}
+void use_edit(){
+    char ch;
+    time_t lasttime;
+    printw("| MENU | 1. Go Back\t2. Sorting\t3. Searching\t4. Editing\n\n");
+    printw("%.*s\n",termx-1, tp);
+    printw("\n1. Copy\n2. Move\n3. Delete\n");
+    while(1){
+        if(ch == '1'){
+            break;
+        }
+        else if(ch == '2'){
+            break;
+        }
+        else if(ch == '3'){
+            break;
+        }
+        refresh();
+        while((ch=getch())==ERR);
+    }
+    clear();
 }
 //precondition: cur2가 NULL값을 가지거나 현재 디렉토리 밖의 파일을 포인트하면 안 된다. tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
 //postcondition: 메뉴를 출력하고 ch값에 따라 2를 누르면 정렬 기능을 실행, 3을 누르면 검색기능을 실행하며 1을 누르면 detail 기능을 종료한다.
@@ -648,8 +669,11 @@ void detail(){
             case '3':
 			use_search();
             break;
+            case '4':
+            use_edit();
+            break;
         }
-        printw("| MENU | 1. Go Back\t2. Sorting\t3. Searching\n\n");
+        printw("| MENU | 1. Go Back\t2. Sorting\t3. Searching\t4. Editing\n\n");
         printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
         if (ch == '1') //left누르면 tree view로 돌아감
             break;
