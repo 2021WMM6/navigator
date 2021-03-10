@@ -106,7 +106,7 @@ void get_name(){
         select_search_list();
     }
     else{
-        mvprintw(3,86,"name not found");
+        mvprintw(3,86,"name not found : press enter to exit");
         refresh();
         getch();
         nodelay(stdscr,TRUE);
