@@ -385,6 +385,15 @@ void sort_type(char ch){
     }
     else if(ch == '2'){
         while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
+            if(least -> type > cur3 -> type)
+                least = cur3;
+            cur3 = cur3 -> back;
+        }
+        if(cur -> type != least -> type)
+            change_l();
+    }
+    else if(ch == '3'){
+        while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
             if(least -> list_size > cur3 -> list_size)
                 least = cur3;
             cur3 = cur3 -> back;
@@ -392,22 +401,13 @@ void sort_type(char ch){
         if(cur -> list_size != least -> list_size)
             change_l();
     }
-    else if(ch == '3'){
+    else if(ch == '4'){
         while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
             if(least -> list_time > cur3 -> list_time)
                 least = cur3;
             cur3 = cur3 -> back;
         }
         if(cur -> list_time != least -> list_time)
-            change_l();
-    }
-    else if(ch == '4'){
-        while(cur3 -> back != NULL && cur3 -> front -> clos != 1){
-            if(least -> type > cur3 -> type)
-                least = cur3;
-            cur3 = cur3 -> back;
-        }
-        if(cur -> type != least -> type)
             change_l();
     }
 }
@@ -452,7 +452,7 @@ void sorting_l(){
     time_t lasttime;
     printw("| MENU | 1. Go Back\t2. Sorting\n\n");
     printw("%.*s\n",termx-1, tp);
-    printw("\n1. File Name\n2. Size\n3. Last Modification\n4. File Type\n");
+    printw("\n1. File Name\n2. File Type\n3. File Type\n4. Last Modification\n");
     while(1){
         if(ch == '1'){
             sort(ch);
