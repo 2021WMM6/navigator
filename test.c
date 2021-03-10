@@ -4,7 +4,8 @@ int pop(){return top == 0 ? -1 : stack[--top];}
 void push(int a){stack[top++] = a;}
 int tops(){return top == 0 ? -1 : stack[top - 1];}
 //precondition: cur2가 NULL값을 가지면 안 된다. name이 검색하고자 하는 키워드를 문자열로 저장하고 있어야 한다. 
-//postcondition: 링크드리스트에서 
+//postcondition: 링크드리스트에서 키워드가 포함된 이름을 가진 구조체들의 search_list 값을 1로 변경한다.
+//               만약 키워드가 포함된 단어가 하나도 없을 경우 temp값이 0, 하나라도 있을 경우 1로 변경한다.
 void search(char name[100]){
     temp = 0;
     char *str;
@@ -142,7 +143,7 @@ void use_search(){
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)
         cur = cur -> front;
-    while(cur -> back -> back != NULL && cur -> clos != 1){
+    while(cur -> back != NULL && cur -> front -> clos != 1){
         cur -> search_list = 0;
         cur = cur -> back;
     }
