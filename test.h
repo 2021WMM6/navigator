@@ -46,6 +46,7 @@ int x, y, row, column = 0;
 int check = 0;          //check는 디렉토리를 open했을 때 open한 디렉토리가 같은 경로에 있는 다른 파일들 중 마지막일 때만 1값을 가짐
 int stack[10001] = {0};
 int top = 0;
+int empty = 0;
   
 int pop();
 void push(int );

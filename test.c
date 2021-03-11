@@ -11,17 +11,26 @@ void delete_file(){
     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
     cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
     snprintf(strbuf, PATH_MAX*2, "%s/%s", tp, cur2 -> a);
-    //remove(strbuf);
-    cur = cur2;
-    if(cur2 -> back -> back != NULL && cur2 -> clos == 0)
-        cur2 = cur2 -> back;
-    else if(cur2 -> clos == 1){
-        cur2 = cur2 -> front;
-        cur2 -> clos = 1;
+    if(remove(strbuf) == 0){
+        cur = cur2;
+        if(cur2 -> back -> back != NULL && cur2 -> clos == 0)
+            cur2 = cur2 -> back;
+        else if(cur2 -> clos == 1){
+            cur2 = cur2 -> front;
+            cur2 -> clos = 1;
+        }
+        else
+            cur2 = cur2 -> front;
+        delete_l();
     }
-    else
-        cur2 = cur2 -> front;
-    delete_l();
+    else{
+        clear();
+        printw("| MENU | 1. Go Back\n\n");
+        printw("ERROR\n");
+        refresh();
+        while(getch() != '1');
+        clear();
+    }
     snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
     strcpy(cur2 -> a, strbuf);
 }
@@ -402,7 +411,7 @@ void print_tree(){
 //precondition: cur2는 디렉토리 파일을 포인트하고 있어야 하고, tp는 현재 디렉토리 경로를 문자열로 가지고 있어야 한다.
 //postcondition: 디렉토리를 열어서 그 안에 있는 파일들의 정보를 링크드리스트에 저장한다.
 //               열기로 한 디렉토리의 op값을 1로 변경, 열어놓은 디렉토리 안의 파일들 중 마지막 파일의 경우 clos값을 1로 저장한다.
-//               만약 열기로 한 디렉토리에 파일이 하나도 없다면 파일이 없다고 출력 후 '1'입력하면 tree view로 돌아간다. 그리고 tp, dp의 경로를 알맞게 바꾼다.
+//               만약 열기로 한 디렉토리에 파일이 하나도 없다면 링크드리스트에 Empty 라는 이름을 가진 파일을 추가해준다.
 void open_dir(){
     int ch;
     cur = cur2;
@@ -422,17 +431,10 @@ void open_dir(){
     }
     cur -> clos = 1;
     if(cur == cur2){
-        clear();
-        printw("| MENU | 1. Go Back\n");
-        printw("\nThere's no file in this directory\n");
-        refresh();
-        while((ch=getch()) != '1');
-        clear();
-        cur -> op = 0;
         cur -> clos = 0;
-        int k = strlen(dp) - strlen(cur -> a) - 1;  
-        sprintf(tp, "%.*s", k, dp);                               
-        strcpy(dp, tp);
+        insert_l("Empty");
+        cur -> clos = 1;
+        empty = 1;
     }
 }
 //precondition:  cur2는 열어놓은 디렉토리 안의 파일들 중 첫번쨰 파일을 포인트하고 있어야한다. 
@@ -846,6 +848,7 @@ int main(){
             case KEY_LEFT:
             //TODO: 커서 왼쪽(이전 위치)
             if(cur2 -> front -> op != 0){
+                empty = 0;
                 close_dir();        //디렉토리 닫기
                 snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
                 strcpy(cur2 -> a, strbuf);
@@ -865,6 +868,15 @@ int main(){
             }
             break;
             case '1':   //1번 누르면 detail 모드로 바뀜
+            if(empty == 1){
+                clear();
+                printw("| MENU | 1. Go Back\n");
+                printw("\nThere's no file in this directory\n");
+                refresh();
+                while((ch=getch()) != '1');
+                clear();
+                break;
+            }
             detail();
             break;
         }
