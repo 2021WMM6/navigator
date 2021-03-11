@@ -4,6 +4,97 @@ int pop(){return top == 0 ? -1 : stack[--top];}
 void push(int a){stack[top++] = a;}
 int tops(){return top == 0 ? -1 : stack[top - 1];}
 
+
+char newname[100];
+char curname[100];
+char lastname[103];
+void rena(){
+//  snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+ //   strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+   // cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+    //snprintf(strbuf, PATH_MAX*2, "%s/%s", tp, cur2 -> a);
+    chdir(tp);
+    mvprintw(5,5,"-----------------------------");
+    for(int i=6;i<9;i++){
+    mvprintw(i,5,"|                           |");
+    }
+    mvprintw(9,5,"-----------------------------");
+    mvprintw(7,7,"new name: ");
+        nocbreak();
+        echo();
+        nodelay(stdscr,FALSE);
+    strncpy(curname,cur2->a+1,strlen(cur2->a)-2);
+        mvscanw(7,17,"%s",newname);
+        int result=rename(curname,newname);
+        if(result==-1){
+        mvprintw(8,7,"error");
+        }
+        cbreak();
+        noecho();
+        nodelay(stdscr,TRUE);
+        clear();
+    }
+
+void File_rename(){
+    int ch;
+    time_t lasttime;
+    while(1)    //탈출 조건-> 1 눌렀을때.
+    {
+        getmaxyx(curscr,termy,termx);
+        lasttime=time(NULL);
+        clear();
+        switch(ch)
+        {
+            case KEY_DOWN:
+            //TODO: 커서 다운
+            if(cur2 -> back -> back != NULL){
+                if(cur2 -> clos == 0){
+                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                    cur2 = cur2 -> back;
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                    strcpy(cur2 -> a, strbuf);
+                }
+            }
+            break;
+            case KEY_UP:
+            //TODO: 커서 업
+            if(cur2 -> front != start){
+                if(cur2 -> front -> op == 0){
+                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                    cur2 = cur2 -> front;
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                    strcpy(cur2 -> a, strbuf);
+                }
+            }
+            break;
+            case 'r':
+
+        printw("| MENU | 1. Quit\n\n");
+        printw("|| If you want to rename file, press 'r' ||\n");
+            print_detail();
+            rena();
+            sprintf(lastname,"(%s)",newname);
+            strcpy(cur2->a,lastname);
+            break;
+        }
+        printw("| MENU | 1. Quit\n\n");
+        printw("|| If you want to rename file, press 'r' ||\n");
+        if (ch == '1')
+            break;
+        cur = start -> back;
+        if(start -> back -> back == NULL || cur2 -> op == 1)
+            break;
+        print_detail();
+        refresh();
+        while((ch=getch())==ERR && time(NULL)-lasttime<3);
+    }
+    clear();
+}
+
 void location_p(){
     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -898,7 +989,7 @@ void use_edit(){
     time_t lasttime;
     printw("| MENU | 1. Go Back\t2. Sorting\t3. Searching\t4. Editing\n\n");
     printw("%.*s\n",termx-1, tp);
-    printw("\n1. Copy\n2. Move\n3. Delete\n");
+    printw("\n1. Copy\n2. Move\n3. Delete\n4. Rename\n");
     while(1){
         if(ch == '1'){
             break;
@@ -916,7 +1007,10 @@ void use_edit(){
                 check = 1;
             delete_file_select();
             break;
-        }
+        }else if(ch=='4'){
+		File_rename();
+		break;
+		}
         refresh();
         while((ch=getch())==ERR);
     }
