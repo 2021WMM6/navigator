@@ -4,6 +4,205 @@ int pop(){return top == 0 ? -1 : stack[--top];}
 void push(int a){stack[top++] = a;}
 int tops(){return top == 0 ? -1 : stack[top - 1];}
 
+void location_p(){
+    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+    snprintf(strbuf, PATH_MAX*3, "%s/%s/%s", tp, cur2 -> a, strex);
+    rename(xpath, strbuf);
+    if(temp != 1){
+        cur = cur3;
+        delete_l();
+    }
+    while(cur2 -> front != start){
+        if(cur2 -> front -> op == 1)
+            close_dir();
+        cur2 = cur2 -> front;
+    }
+    cur2 = start -> back;
+    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+    strcpy(cur2 -> a, strbuf);
+}
+void location_home(){
+    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+    snprintf(strbuf, PATH_MAX*3, "%s/%s", wd, strex);
+    rename(xpath, strbuf);
+    char *str = strex;
+    snprintf(strbuf, PATH_MAX*2, "%s/%s", wd, str);
+    temp = move_type;
+    cur = start;
+    insert_l(str);
+    while(cur2 -> front != start){
+        if(cur2 -> front -> op == 1)
+            close_dir();
+        cur2 = cur2 -> front;
+    }
+    cur2 = start -> back;
+    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+    strcpy(cur2 -> a, strbuf);
+    clear();
+    print_tree();
+    refresh();
+}
+void select_location(){
+    int ch;
+    time_t lasttime;
+    while(1)    //탈출 조건-> x눌렀을때.
+    {
+        getmaxyx(curscr,termy,termx);     //가로세로 구하기
+        lasttime=time(NULL);
+        clear();
+        //printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
+        switch(ch)
+        {
+            case KEY_DOWN:
+            //TODO: 커서 다운
+            if(cur2 -> back -> back != NULL){
+                if(cur2 -> clos == 0){
+                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                    cur2 = cur2 -> back;
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                    strcpy(cur2 -> a, strbuf);
+                }
+            }
+            break;
+            case KEY_UP:
+            //TODO: 커서 업
+            if(cur2 -> front != start){
+                if(cur2 -> front -> op == 0){
+                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                    cur2 = cur2 -> front;
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                    strcpy(cur2 -> a, strbuf);
+                }
+            }
+            break;
+            case KEY_LEFT:
+            //TODO: 커서 왼쪽(이전 위치)
+            if(cur2 -> front -> op != 0){
+                empty = 0;
+                close_dir();        //디렉토리 닫기
+                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                strcpy(cur2 -> a, strbuf);
+            }
+            break;
+            case KEY_RIGHT:
+            //TODO: 커서 오른쪽(디렉토리 들어가기/동작없음)
+            if(cur2 -> type == DT_DIR && cur2 -> op == 0){
+                snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                open_dir();         //디렉토리 열기
+                if(cur2 -> op == 1)
+                    cur2 = cur2 -> back;
+                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                strcpy(cur2 -> a, strbuf);
+            }
+            break;
+            case 'p':
+            if(cur2 -> type != DT_DIR)
+                break;
+            location_p();
+            return;
+            case 'h':
+            location_home();
+            return;
+        }
+        if (ch == '1') //프로그램 종료
+            break;
+        printw("| MENU | 1. Quit\n\n");
+        printw("|| Select directory where to move your file with press 'p' ||\n\n|| If you want to select home directory, press 'h' ||\n\n");
+        snprintf(strbuf,PATH_MAX,"%s",wd);
+        printw("%.*s",termx-1,strbuf);
+        cur = start -> back;
+        if(start -> back -> back == NULL)
+            break;
+        print_tree(); // tree view 형식으로 출력
+        refresh();
+        while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
+    }
+}
+void move_file(){
+    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+    snprintf(xpath, PATH_MAX*2, "%s/%s", tp, cur2 -> a);
+    strcpy(strex, cur2 -> a);
+    move_type = cur2 -> type;
+    cur3 = cur2;
+    while(cur3 -> front != start){
+        if(cur3 -> op == 1){
+            temp = 1;
+            break;
+        }
+        cur3 = cur3 -> front;
+        temp = 0;
+    }
+    cur3 = cur2;
+    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+    strcpy(cur2 -> a, strbuf);
+}
+void move_file_select(){
+    int ch;
+    time_t lasttime;
+    while(1)    //탈출 조건-> 1 눌렀을때.
+    {
+        getmaxyx(curscr,termy,termx);
+        lasttime=time(NULL);
+        clear();
+        switch(ch)
+        {
+            case KEY_DOWN:
+            //TODO: 커서 다운
+            if(cur2 -> back -> back != NULL){
+                if(cur2 -> clos == 0){
+                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                    cur2 = cur2 -> back;
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                    strcpy(cur2 -> a, strbuf);
+                }
+            }
+            break;
+            case KEY_UP:
+            //TODO: 커서 업
+            if(cur2 -> front != start){
+                if(cur2 -> front -> op == 0){
+                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                    cur2 = cur2 -> front;
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                    strcpy(cur2 -> a, strbuf);
+                }
+            }
+            break;
+            case 'm':
+            move_file();
+            select_location();
+            return ;
+            break;
+        }
+        printw("| MENU | 1. Quit\n\n");
+        printw("|| If you want to move file, press 'm' ||\n");
+        if (ch == '1')
+            break;
+        cur = start -> back;
+        if(start -> back -> back == NULL || cur2 -> op == 1)
+            break;
+        print_detail(); 
+        refresh();
+        while((ch=getch())==ERR && time(NULL)-lasttime<3);
+    }
+    clear();
+}
 //precondition: cur2가 삭제하고자 하는 파일을 포인트하고 있어야 한다. tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
 //postcondition: 삭제하고자 하는 파일의 정보를 링크드리스테에서 삭제하고 실제로 파일을 제거한다. cur2는 삭제한 파일의 앞이나 뒤를 포인트한다.
 void delete_file(){
@@ -280,7 +479,7 @@ void delete_l(){
     cur = cur -> front;
     free(p);
 }
-//precondition: ch는 readdir로 읽은 파일의 이름으로 NULL이면 안 된다.
+//precondition: ch는 readdir로 읽은 파일의 이름으로 NULL이면 안 된다. strbuf는 파일의 경로를 저장하고 있어야 한다. temp는 파일의 type정보를 가지고 있어야 한다.
 //postcondition: 동적으로 할당된 메모리에 파일 정보를 저장하여 링크드리스트에 삽입한다.
 void insert_l(char *ch){
     linked *p = (linked *)malloc(sizeof(linked));
@@ -705,6 +904,8 @@ void use_edit(){
             break;
         }
         else if(ch == '2'){
+            move_file_select();
+            temp = 1;
             break;
         }
         else if(ch == '3'){
@@ -768,6 +969,10 @@ void detail(){
             break;
             case '4':
             use_edit();
+            if(temp == 1){
+                temp = 0;
+                return ;
+            }
             break;
         }
         printw("| MENU | 1. Go Back\t2. Sorting\t3. Searching\t4. Editing\n\n");
