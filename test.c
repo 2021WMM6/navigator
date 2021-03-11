@@ -3,6 +3,141 @@
 int pop(){return top == 0 ? -1 : stack[--top];}
 void push(int a){stack[top++] = a;}
 int tops(){return top == 0 ? -1 : stack[top - 1];}
+
+//메뉴 출력해주는 함수
+void print_menu(int n) {
+    switch(n) {
+        case 1:
+            printw("|============== MENU ==============|\n\n");
+            printw("\t1. See Detail\n\n");
+            printw("\tX. Exit\n\n");
+            printw("|==================================|\n\n");
+            break;
+        case 2:
+            printw("|============== MENU ==============|\n\n");
+            printw("\t1. Go Back\n\n");
+            printw("\t2. Sorting\n\n");
+            printw("\t3. Searching\n\n");
+            printw("\t4. Editing\n\n");
+            printw("|==================================|\n\n");
+            break;
+        case 3:
+            printw("|==================================|\n\n");
+            printw("\t1. Go Back\n\n");
+            printw(" There's no file in this directory\n\n");
+            printw("|==================================|\n\n");
+            break;
+        case 4:
+            printw("\n|========= SORTING OPTION =========|\n\n");
+            printw("\t1. File Name\n\n");
+            printw("\t2. File Type\n\n");
+            printw("\t3. Size\n\n");
+            printw("\t4. Last Modification\n\n");
+            printw("|==================================|\n\n");
+            break;
+        case 5:
+            printw("\n|=========== PIN OPTION ===========|\n\n");
+            printw("\t1. Use Pin\n\n");
+            printw("\t2. Don't Use Pin\n\n");
+            printw("|==================================|\n\n");
+            break;
+        case 6:
+            printw("|==================================|\n\n");
+            printw("\t1. Quit\n\n");
+            printw(" If you want to use pin, press 'p'\n\n");
+            printw("|==================================|\n\n");
+            break;
+        case 7:
+            printw("\n|========= Editing Option =========|\n\n");
+            printw("\t1. Copy\n\n");
+            printw("\t2. Move\n\n");
+            printw("\t3. Delete\n\n");
+            printw("|==================================|\n\n");
+            break;
+        case 8:
+            printw("|==================================|\n\n");
+            printw("\t1. Quit\n\n");
+            printw("If you want to delete file, press 'd'\n\n");
+            printw("|==================================|\n\n");
+            break;
+    }
+}
+//precondition: cur2가 삭제하고자 하는 파일을 포인트하고 있어야 한다. tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
+//postcondition: 삭제하고자 하는 파일의 정보를 링크드리스테에서 삭제하고 실제로 파일을 제거한다. cur2는 삭제한 파일의 앞이나 뒤를 포인트한다.
+void delete_file(){
+    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+    snprintf(strbuf, PATH_MAX*2, "%s/%s", tp, cur2 -> a);
+    //remove(strbuf);
+    cur = cur2;
+    if(cur2 -> back -> back != NULL && cur2 -> clos == 0)
+        cur2 = cur2 -> back;
+    else if(cur2 -> clos == 1){
+        cur2 = cur2 -> front;
+        cur2 -> clos = 1;
+    }
+    else
+        cur2 = cur2 -> front;
+    delete_l();
+    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+    strcpy(cur2 -> a, strbuf);
+}
+//precondition: cur2가 NULL값을 가지면 안 된다.
+//postcondition: 메뉴창을 출력하고 키보드를 통해 ()로 내가 삭제하고자 하는 파일을 포인터한 후 제거한다. '1'을 누르면 delete기능을 종료한다.
+//               디렉토리 안에 모든 파일을 제거하면 기능을 종료한다.
+void delete_file_select(){
+    int ch;
+    time_t lasttime;
+    while(1)    //탈출 조건-> 1 눌렀을때.
+    {
+        getmaxyx(curscr,termy,termx);
+        lasttime=time(NULL);
+        clear();
+        switch(ch)
+        {
+            case KEY_DOWN:
+            //TODO: 커서 다운
+            if(cur2 -> back -> back != NULL){
+                if(cur2 -> clos == 0){
+                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                    cur2 = cur2 -> back;
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                    strcpy(cur2 -> a, strbuf);
+                }
+            }
+            break;
+            case KEY_UP:
+            //TODO: 커서 업
+            if(cur2 -> front != start){
+                if(cur2 -> front -> op == 0){
+                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                    cur2 = cur2 -> front;
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                    strcpy(cur2 -> a, strbuf);
+                }
+            }
+            break;
+            case 'd':
+            delete_file();
+            break;
+        }
+        print_menu(8);
+        if (ch == '1')
+            break;
+        cur = start -> back;
+        if(start -> back -> back == NULL || cur2 -> op == 1)
+            break;
+        print_detail(); 
+        refresh();
+        while((ch=getch())==ERR && time(NULL)-lasttime<3);
+    }
+    clear();
+}
 //precondition: cur2가 NULL값을 가지면 안 된다. name이 검색하고자 하는 키워드를 문자열로 저장하고 있어야 한다. 
 //postcondition: 링크드리스트에서 키워드가 포함된 이름을 가진 구조체들의 search_list 값을 1로 변경한다.
 //               만약 키워드가 포함된 단어가 하나도 없을 경우 temp값이 0, 하나라도 있을 경우 1로 변경한다.
@@ -147,7 +282,7 @@ void use_search(){
     getmaxyx(curscr,termy,termx);     //가로세로 구하기
     lasttime=time(NULL);
     clear();
-    printw("| MENU | 1. Go Back\n\n");
+    print_menu(2);
     printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
     print_detail();
     get_name();
@@ -324,7 +459,9 @@ void print_tree(){
 //precondition: cur2는 디렉토리 파일을 포인트하고 있어야 하고, tp는 현재 디렉토리 경로를 문자열로 가지고 있어야 한다.
 //postcondition: 디렉토리를 열어서 그 안에 있는 파일들의 정보를 링크드리스트에 저장한다.
 //               열기로 한 디렉토리의 op값을 1로 변경, 열어놓은 디렉토리 안의 파일들 중 마지막 파일의 경우 clos값을 1로 저장한다.
+//               만약 열기로 한 디렉토리에 파일이 하나도 없다면 파일이 없다고 출력 후 '1'입력하면 tree view로 돌아간다. 그리고 tp, dp의 경로를 알맞게 바꾼다.
 void open_dir(){
+    int ch;
     cur = cur2;
     snprintf(dp, PATH_MAX*2, "%s/%s", tp, cur -> a);           //dp는 열려고 하는 디렉토리 경로, tp는 현재 디렉토리 경로
     cur -> op = 1;
@@ -342,6 +479,11 @@ void open_dir(){
     }
     cur -> clos = 1;
     if(cur == cur2){
+        clear();
+        print_menu(3);
+        refresh();
+        while((ch=getch()) != '1');
+        clear();
         cur -> op = 0;
         cur -> clos = 0;
         int k = strlen(dp) - strlen(cur -> a) - 1;  
@@ -451,9 +593,9 @@ void sort(char ch){
 void sorting_l(){
     char ch;
     time_t lasttime;
-    printw("| MENU | 1. Go Back\t2. Sorting\n\n");
+    print_menu(2);
     printw("%.*s\n",termx-1, tp);
-    printw("\n1. File Name\n2. File Type\n3. File Type\n4. Last Modification\n");
+    print_menu(4);
     while(1){
         if(ch == '1'){
             sort(ch);
@@ -549,8 +691,7 @@ void use_pin(){
                 cur2 -> pin = 1;
             break;
         }
-        printw("| MENU | 1. Quit\n\n");
-        printw("|| If you want to use pin, press 'p' ||\n");
+        print_menu(6);
         if (ch == '1')
             break;
         cur = start -> back;
@@ -566,9 +707,9 @@ void use_pin(){
 void sorting_pin(){
     char ch;
     time_t lasttime;
-    printw("| MENU | 1. Go Back\t2. Sorting\n\n");
+    print_menu(2);
     printw("%.*s\n",termx-1, tp);
-    printw("\n1. Use pin\n2. Don't use pin\n");
+    print_menu(5);
     while(1){
         if(ch == '1'){
             clear();
@@ -604,8 +745,38 @@ void print_detail(){
         cur = cur -> back;
     }
 }
+//precondition: tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
+//postcondition: 메뉴창을 출력해주고 숫자를 입력하여 복사, 이동, 삭제를 하는 함수를 호출한 후 기능이 끝이나면 화면을 clear하고 종료한다.
+void use_edit(){
+    char ch;
+    time_t lasttime;
+    print_menu(2);
+    printw("%.*s\n",termx-1, tp);
+    print_menu(7);
+    while(1){
+        if(ch == '1'){
+            break;
+        }
+        else if(ch == '2'){
+            break;
+        }
+        else if(ch == '3'){
+            cur = cur2;
+            while(cur -> front -> op != 1 && cur -> front != start)
+                cur = cur -> front;
+            if(cur -> front -> clos == 1)
+                check = 1;
+            delete_file_select();
+            break;
+        }
+        refresh();
+        while((ch=getch())==ERR);
+    }
+    clear();
+}
 //precondition: cur2가 NULL값을 가지거나 현재 디렉토리 밖의 파일을 포인트하면 안 된다. tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
 //postcondition: 메뉴를 출력하고 ch값에 따라 2를 누르면 정렬 기능을 실행, 3을 누르면 검색기능을 실행하며 1을 누르면 detail 기능을 종료한다.
+//               delete기능을 사용 후 디렉토리에 파일이 없으면 파일이 없다고 출력한 후 '1'누르면 tree view로 돌아간다. 그리고 dp, tp에 경로를 알맞게 저장한다.
 void detail(){
     int ch;
     time_t lasttime;
@@ -648,14 +819,31 @@ void detail(){
             case '3':
 			use_search();
             break;
+            case '4':
+            use_edit();
+            break;
         }
-        printw("| MENU | 1. Go Back\t2. Sorting\t3. Searching\n\n");
+        print_menu(2);
         printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
         if (ch == '1') //left누르면 tree view로 돌아감
             break;
         cur = start -> back;
+        if(start -> back -> back == NULL || cur2 -> op == 1){
+            cur2 -> op = 0;
+            if(check != 1)
+                cur2 -> clos = 0;
+            int k = strlen(dp) - strlen(cur2 -> a) + 1;
+            sprintf(tp, "%.*s", k, dp);                                
+            strcpy(dp, tp);
+            clear();
+            print_menu(3);
+            refresh();
+            while((ch=getch()) != '1');
+            break;
+        }
         print_detail(); // 현재 디렉토리 안에 있는 파일만 자세하게 출력;
         refresh();
+        check = 0;
         while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
     }
     clear();
@@ -736,10 +924,12 @@ int main(){
         }
         if (ch == EXIT_KEY) //프로그램 종료
             break;
-        printw("| MENU | 1. See Detail\t\tx. Exit\n\n");
+        print_menu(1);
         snprintf(strbuf,PATH_MAX,"%s",wd);
         printw("%.*s",termx-1,strbuf);
         cur = start -> back;
+        if(start -> back -> back == NULL)
+            break;
         print_tree(); // tree view 형식으로 출력
         refresh();
         while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
