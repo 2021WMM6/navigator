@@ -79,3 +79,5 @@ void select_location();
 void save_tree();
 void location_p();
 void location_home();
+void File_rename();
+void rena();

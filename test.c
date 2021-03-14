@@ -94,7 +94,9 @@ void File_rename(){
     }
     clear();
 }
-
+//precondition: cur2가 이동하려는 디렉토리를 포인트하고 있어야 한다. tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다. 
+//              strex는 이동시킬 파일의 이름을 가지고 있어야 한다. xpath는 이동시키고 싶은 파일의 경로를 가지고 있어야 한다.
+//postcondition: 이동시키려는 파일을 선택한 디렉토리에 이동시킨다. 열려있는 모든 디렉토리를 닫아준다.
 void location_p(){
     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -114,6 +116,11 @@ void location_p(){
     snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
     strcpy(cur2 -> a, strbuf);
 }
+//precondition: cur2가 이동하려는 디렉토리를 포인트하고 있어야 한다. wd는 기본 디렉토리의 경로를 문자열로 가지고 있어야 한다.
+//              strex는 이동시킬 파일의 이름을 가지고 있어야 한다. xpath는 이동시키고 싶은 파일의 경로를 가지고 있어야 한다.
+//postcondition: 이동시키려는 파일을 기본(가장 상위의) 디렉토리에 이동시킨다. 열려있는 모든 디렉토리를 닫아준다.
+//               링크드 리스트에 이동시킨 파일의 정보를 start -> back 에 추가해주고 cur2는 추가한 파일을 포인트하고 있다. 
+//               tree view를 출력해주고 함수를 종료한다.
 void location_home(){
     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -137,6 +144,11 @@ void location_home(){
     print_tree();
     refresh();
 }
+//precondition: cur2가 이동시키려는 파일을 포인트하고 있어 야한다. wd는 기본 디렉토리의 경로를 문자열로 가지고 있어야 한다.
+//postcondition: 메뉴를 출력해주고 main()과 비슷하게 tree view 형식으로 파일들을 보여주며 키보드를 통해 이동할 할 수 있다.
+//               디렉토리를 선택한 후 'p'를 누르면 location_p()를 호출하여 그 디렉토리 안에 파일을 이동시키고 move기능을 종료한다.(디렉토리 이외의 파일을 선택한 후 'p'를 눌러도 아무 것도 일어나지 않는다.)
+//               'h'를 누르면 지금 선택하고 있는 파일과 상관없이 location_home()을 호출하여 기본(가장 상위의) 디렉토리에 파일을 이동시키고 move기능을 종료한다.
+//               위 경우가 아니더라도 '1'을 누를 경우 move기능을 종료한다.
 void select_location(){
     int ch;
     time_t lasttime;
@@ -219,6 +231,10 @@ void select_location(){
         while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
     }
 }
+//precondition: cur2가 이동시키고 싶은 파일을 포인트하고 있어야 한다. tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
+//postcondition: 이동시키려는 파일이 열린 디렉토리 안에 존재한다면 temp값을 1로 변경, 아니면 0으로 변경한다.
+//               strex에 이동시킬 파일의 이름을 문자열로 저장하고, move_type에 이동시킬 파일의 type값을 저장한다.
+//               xpath에 이동시킬 파일의 경로를 문자열로 저장한다.
 void move_file(){
     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -239,6 +255,10 @@ void move_file(){
     snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
     strcpy(cur2 -> a, strbuf);
 }
+//precondition: cur2가 NULL값을 가지거나 현재 디렉토리 밖의 파일을 포인트하면 안 된다.
+//postcondition: 화면에 메뉴와 detail 정보를 출력시켜주고 키보드를 통해 ()로 내가 이동시키려고 하는 파일을 선택한다.
+//               그리고 'm'을 누르면 move_file()을 호출해준 후 select_location()을 호출한 후 기능을 종료한다.
+//               위 경우가 아니더라도 '1'을 누를 경우 move기능을 종료한다.
 void move_file_select(){
     int ch;
     time_t lasttime;
@@ -1007,7 +1027,8 @@ void use_edit(){
                 check = 1;
             delete_file_select();
             break;
-        }else if(ch=='4'){
+        }
+        else if(ch=='4'){
 		File_rename();
 		break;
 		}
