@@ -8,6 +8,95 @@ int tops(){return top == 0 ? -1 : stack[top - 1];}
 char newname[100];
 char curname[100];
 char lastname[103];
+//precondition: xpath는 복사할 파일의 경로를 가지고 있어야 하고 strbuf는 그 파일이 복사될 경로를 가지고 있어야 한다.
+//postcondition: xpath 경로의 파일을 strbuf 경로에 복사시킨다.
+int copy(){
+    FILE *fexist, *fnew;
+    int a;
+    if((fexist = fopen(xpath, "rb")) == NULL)
+        return -1;
+    if((fnew = fopen(strbuf, "wb")) == NULL){
+        fclose(fexist);
+        return -1;
+    }
+    while(1){
+        a = fgetc(fexist);
+        if(!feof(fexist))
+            fputc(a, fnew);
+        else
+            break;
+    }
+    fclose(fexist);
+    fclose(fnew);
+    return 0;
+}
+//precondition: cur2가 NULL값을 가지거나 현재 디렉토리 밖의 파일을 포인트하면 안 된다.
+//postcondition: 화면에 메뉴와 detail 정보를 출력시켜주고 키보드를 통해 ()로 내가 복사하려고 하는 파일을 선택한다.
+//               그리고 'c'을 누르면 move_file()을 호출해준 후 select_location()을 호출한 후 기능을 종료한다.
+//               위 경우가 아니더라도 '1'을 누를 경우 move기능을 종료한다.
+void copy_file_select(){
+    int ch;
+    time_t lasttime;
+    while(1)    //탈출 조건-> 1 눌렀을때.
+    {
+        getmaxyx(curscr,termy,termx);
+        lasttime=time(NULL);
+        clear();
+        switch(ch)
+        {
+            case KEY_DOWN:
+            //TODO: 커서 다운
+            if(cur2 -> back -> back != NULL){
+                if(cur2 -> clos == 0){
+                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                    cur2 = cur2 -> back;
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                    strcpy(cur2 -> a, strbuf);
+                }
+            }
+            break;
+            case KEY_UP:
+            //TODO: 커서 업
+            if(cur2 -> front != start){
+                if(cur2 -> front -> op == 0){
+                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                    cur2 = cur2 -> front;
+                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                    strcpy(cur2 -> a, strbuf);
+                }
+            }
+            break;
+            case 'c':
+            if(cur2 -> type == DT_DIR){
+                printw("You can't copy Directory");
+                refresh();
+                while(getch() == ERR);
+                clear();
+                break;
+            }
+            move_file();
+            select_location(2);
+            return ;
+            break;
+        }
+        printw("| MENU | 1. Quit\n\n");
+        printw("|| If you want to copy file, press 'c' ||\n");
+        if (ch == '1')
+            break;
+        cur = start -> back;
+        if(start -> back -> back == NULL || cur2 -> op == 1)
+            break;
+        print_detail(); 
+        refresh();
+        while((ch=getch())==ERR && time(NULL)-lasttime<3);
+    }
+    clear();
+}
+
 void rena(){
 //  snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
  //   strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -96,16 +185,23 @@ void File_rename(){
 }
 //precondition: cur2가 이동하려는 디렉토리를 포인트하고 있어야 한다. tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다. 
 //              strex는 이동시킬 파일의 이름을 가지고 있어야 한다. xpath는 이동시키고 싶은 파일의 경로를 가지고 있어야 한다.
-//postcondition: 이동시키려는 파일을 선택한 디렉토리에 이동시킨다. 열려있는 모든 디렉토리를 닫아준다.
-void location_p(){
+//              move기능을 사용할 때는 con값이 1이어야 하고, copy기능을 사용하려면 con값이 2여야 한다.
+//postcondition: 1) 이동시키려는 파일을 선택한 디렉토리에 이동시킨다. 열려있는 모든 디렉토리를 닫아준다.
+//               2) 복사시키려는 파일을 선택한 디렉토리에 복사시킨다. 열려있는 모든 디렉토리를 닫아준다.
+void location_p(int con){
     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
     cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
     snprintf(strbuf, PATH_MAX*3, "%s/%s/%s", tp, cur2 -> a, strex);
-    rename(xpath, strbuf);
-    if(temp != 1){
-        cur = cur3;
-        delete_l();
+    if(con == 1){
+        rename(xpath, strbuf);
+        if(temp != 1){
+            cur = cur3;
+            delete_l();
+        }
+    }
+    else if(con == 2){
+        copy();
     }
     while(cur2 -> front != start){
         if(cur2 -> front -> op == 1)
@@ -118,15 +214,20 @@ void location_p(){
 }
 //precondition: cur2가 이동하려는 디렉토리를 포인트하고 있어야 한다. wd는 기본 디렉토리의 경로를 문자열로 가지고 있어야 한다.
 //              strex는 이동시킬 파일의 이름을 가지고 있어야 한다. xpath는 이동시키고 싶은 파일의 경로를 가지고 있어야 한다.
-//postcondition: 이동시키려는 파일을 기본(가장 상위의) 디렉토리에 이동시킨다. 열려있는 모든 디렉토리를 닫아준다.
-//               링크드 리스트에 이동시킨 파일의 정보를 start -> back 에 추가해주고 cur2는 추가한 파일을 포인트하고 있다. 
+//              move기능을 사용할 때는 con값이 1이어야 하고, copy기능을 사용하려면 con값이 2여야 한다.
+//postcondition: 1) 이동시키려는 파일을 기본(가장 상위의) 디렉토리에 이동시킨다. 열려있는 모든 디렉토리를 닫아준다.
+//               2) 복사시키려는 파일을 기본(가장 상위의) 디렉토리에 복사시킨다. 열려있는 모든 디렉토리를 닫아준다.
+//               링크드 리스트에 이동/복사시킨 파일의 정보를 start -> back 에 추가해주고 cur2는 추가한 파일을 포인트하고 있다. 
 //               tree view를 출력해주고 함수를 종료한다.
-void location_home(){
+void location_home(int con){
     snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
     strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
     cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-    snprintf(strbuf, PATH_MAX*3, "%s/%s", wd, strex);
-    rename(xpath, strbuf);
+    snprintf(strbuf, PATH_MAX*2, "%s/%s", wd, strex);
+    if(con == 1)
+        rename(xpath, strbuf);
+    else if(con == 2)
+        copy();
     char *str = strex;
     snprintf(strbuf, PATH_MAX*2, "%s/%s", wd, str);
     temp = move_type;
@@ -145,11 +246,12 @@ void location_home(){
     refresh();
 }
 //precondition: cur2가 이동시키려는 파일을 포인트하고 있어 야한다. wd는 기본 디렉토리의 경로를 문자열로 가지고 있어야 한다.
+//              move기능을 사용할 때는 con값이 1이어야 하고, copy기능을 사용하려면 con값이 2여야 한다.
 //postcondition: 메뉴를 출력해주고 main()과 비슷하게 tree view 형식으로 파일들을 보여주며 키보드를 통해 이동할 할 수 있다.
-//               디렉토리를 선택한 후 'p'를 누르면 location_p()를 호출하여 그 디렉토리 안에 파일을 이동시키고 move기능을 종료한다.(디렉토리 이외의 파일을 선택한 후 'p'를 눌러도 아무 것도 일어나지 않는다.)
-//               'h'를 누르면 지금 선택하고 있는 파일과 상관없이 location_home()을 호출하여 기본(가장 상위의) 디렉토리에 파일을 이동시키고 move기능을 종료한다.
+//               디렉토리를 선택한 후 'p'를 누르면 location_p()를 호출하여 그 디렉토리 안에 파일을 이동/복사시키고 기능을 종료한다.(디렉토리 이외의 파일을 선택한 후 'p'를 눌러도 아무 것도 일어나지 않는다.)
+//               'h'를 누르면 지금 선택하고 있는 파일과 상관없이 location_home()을 호출하여 기본(가장 상위의) 디렉토리에 파일을 이동/복사시키고 기능을 종료한다.
 //               위 경우가 아니더라도 '1'을 누를 경우 move기능을 종료한다.
-void select_location(){
+void select_location(int con){
     int ch;
     time_t lasttime;
     while(1)    //탈출 조건-> x눌렀을때.
@@ -211,16 +313,16 @@ void select_location(){
             case 'p':
             if(cur2 -> type != DT_DIR)
                 break;
-            location_p();
+            location_p(con);
             return;
             case 'h':
-            location_home();
+            location_home(con);
             return;
         }
         if (ch == '1') //프로그램 종료
             break;
         printw("| MENU | 1. Quit\n\n");
-        printw("|| Select directory where to move your file with press 'p' ||\n\n|| If you want to select home directory, press 'h' ||\n\n");
+        printw("|| Select directory where to paste your file with press 'p' ||\n\n   || If you want to select home directory, press 'h' ||\n\n");
         snprintf(strbuf,PATH_MAX,"%s",wd);
         printw("%.*s",termx-1,strbuf);
         cur = start -> back;
@@ -297,7 +399,7 @@ void move_file_select(){
             break;
             case 'm':
             move_file();
-            select_location();
+            select_location(1);
             return ;
             break;
         }
@@ -654,13 +756,9 @@ void print_tree(){
     push(row);      //row정보 stack에 저장
     while(--termy > 0){
         if(cur -> op == 1){             //열린 디렉토리가 있을 때
-            if(cur -> front -> op != 1){
+            if(cur -> front -> op != 1 && cur -> front != start){
                 mvprintw(column, row, "\\");
-                
-                if (cur->type == DT_DIR)
-                    printw("+%.*s",termx-1,cur -> a);
-                else if (cur->type == DT_REG)
-                    printw("-%.*s",termx-1,cur -> a);
+                printw("-%.*s",termx-1,cur -> a);
             }
             else
                 printw("%.*s",termx-1,cur -> a);
@@ -671,7 +769,10 @@ void print_tree(){
         }
         else if(cur -> clos == 1){ //열린 디렉토리의 마지막 파일일 때
             if(i == 0){                 //열린 디렉토리 파일이 하나만 있을 때
-                printw("%.*s",termx-1,cur -> a);
+                if (cur->type == DT_DIR)
+                    printw("+%.*s",termx-1,cur -> a);
+                else if (cur->type == DT_REG)
+                    printw("%.*s",termx-1,cur -> a);
                 column = y + 1;
             }
             else{
@@ -696,7 +797,10 @@ void print_tree(){
             return ;
         }
         else if(i == 0){
-            printw("%.*s",termx-1,cur -> a);
+            if (cur->type == DT_DIR)
+                    printw("+%.*s",termx-1,cur -> a);
+            else if (cur->type == DT_REG)
+                    printw("%.*s",termx-1,cur -> a);
             column = y + 1;
         }
         else{
@@ -1012,6 +1116,8 @@ void use_edit(){
     printw("\n1. Copy\n2. Move\n3. Delete\n4. Rename\n");
     while(1){
         if(ch == '1'){
+            copy_file_select();
+            temp = 1;
             break;
         }
         else if(ch == '2'){
