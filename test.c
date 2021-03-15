@@ -84,6 +84,11 @@ void print_menu(int n) {
             printw("\t1. Quit\n\n");
             printw("If you want to move file, press 'm'\n\n");
             printw("|==================================|\n\n");
+            break;
+        case 13:
+            printw("|==================================|\n\n");
+            printw("\tX. Quit\n\n");
+            printw("|==================================|\n\n");
     }
 }
 
@@ -1083,7 +1088,7 @@ void sort(char ch){
 void sorting_l(){
     char ch;
     time_t lasttime;
-    print_menu(2);
+    print_menu(13);
     printw("%.*s\n",termx-1, tp);
     print_menu(4);
     while(1){
@@ -1101,6 +1106,10 @@ void sorting_l(){
         }
         else if(ch == '4'){
             sort(ch);
+            break;
+        }
+        else if(ch == 'x'){
+            clear();
             break;
         }
         refresh();
@@ -1197,7 +1206,7 @@ void use_pin(){
 void sorting_pin(){
     char ch;
     time_t lasttime;
-    print_menu(2);
+    print_menu(13);
     printw("%.*s\n",termx-1, tp);
     print_menu(5);
     while(1){
@@ -1211,6 +1220,10 @@ void sorting_pin(){
         else if(ch == '2'){
             clear();
             sorting_l();
+            break;
+        }
+        else if(ch == 'x'){
+            clear();
             break;
         }
         refresh();
@@ -1254,7 +1267,7 @@ void print_detail(){
 void use_edit(){
     char ch;
     time_t lasttime;
-    print_menu(2);
+    print_menu(13);
     printw("%.*s\n",termx-1, tp);
     print_menu(7);
     while(1){
@@ -1278,9 +1291,13 @@ void use_edit(){
             break;
         }
         else if(ch=='4'){
-		File_rename();
-		break;
+            File_rename();
+            break;
 		}
+        else if(ch == 'x'){
+            clear();
+            break;
+        }
         refresh();
         while((ch=getch())==ERR);
     }
