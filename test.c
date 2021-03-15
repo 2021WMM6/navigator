@@ -692,6 +692,23 @@ void delete_l(){
     cur = cur -> front;
     free(p);
 }
+
+int dir_size(char *ch){
+    long int sum = 0;
+    snprintf(strex, PATH_MAX*2, "%s/%s", tp, ch);
+    DIR *dirp;      //디렉토리 포인터
+    struct dirent *diritem;    //디렉토리 항목 포인터
+    dirp = opendir(strex);
+    while((diritem=readdir(dirp)) != NULL){
+        if(strncmp(diritem -> d_name, ".", 1) != 0){        //.으로 시작하는 파일 제외하고 링크드 리스트에 저장
+            char *str = diritem->d_name;
+            snprintf(xpath, PATH_MAX*2, "%s/%s",strex, str);
+            stat(xpath, &st);
+            sum += st.st_size;
+        }
+    }
+    return sum;
+}
 //precondition: ch는 readdir로 읽은 파일의 이름으로 NULL이면 안 된다. strbuf는 파일의 경로를 저장하고 있어야 한다. temp는 파일의 type정보를 가지고 있어야 한다.
 //postcondition: 동적으로 할당된 메모리에 파일 정보를 저장하여 링크드리스트에 삽입한다.
 void insert_l(char *ch){
@@ -703,9 +720,12 @@ void insert_l(char *ch){
     p -> pin = 0;
     p  -> search_list = 0;
     stat(strbuf, &st);
-    p -> list_size = st.st_size;
     p -> list_time = st.st_mtim.tv_sec;
     sprintf(p -> list_change,"%s", ctime(&st.st_mtim.tv_sec));         //수정 시간을 요일/월/일/시간/년 형태로 바꾸어 문자열에 저장
+    if(p -> type == DT_DIR)
+        p -> list_size = dir_size(ch);
+    else
+        p -> list_size = st.st_size;
     p -> back = cur -> back;
     p -> front = cur;
     cur -> back -> front = p;
@@ -1285,11 +1305,11 @@ int main(){
 	start_color();
     keypad(stdscr,TRUE);    //enable keypad, arrows
     getcwd(wd,PATH_MAX);    //현재 디렉토리 가져오기
+    strcpy(tp, wd);         //wd는 최상위 디렉토리 경로로 바뀌지 않음
     save_tree(); //파일 정보 링크드리스트에 저장
     cur2 = end -> front;
     snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
     strcpy(cur2 -> a, strbuf);
-    strcpy(tp, wd);         //wd는 최상위 디렉토리 경로로 바뀌지 않음
 	init_pair(1,COLOR_BLUE,COLOR_BLACK);
     while(1)    //탈출 조건-> x눌렀을때.
     {
