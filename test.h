@@ -16,6 +16,8 @@ char wd[PATH_MAX];
 char dp[PATH_MAX];
 char tp[PATH_MAX];
 char strbuf[PATH_MAX];
+char xpath[PATH_MAX];
+char strex[PATH_MAX];
 char name[100];
 typedef struct list{
     char a[PATH_MAX];      //파일 이름
@@ -46,6 +48,8 @@ int x, y, row, column = 0;
 int check = 0;          //check는 디렉토리를 open했을 때 open한 디렉토리가 같은 경로에 있는 다른 파일들 중 마지막일 때만 1값을 가짐
 int stack[10001] = {0};
 int top = 0;
+int empty = 0;
+int move_type = 0;
   
 int pop();
 void push(int );
@@ -68,3 +72,12 @@ void print_pin();
 void use_search();
 void print_search_list();
 void select_search_list();
+void print_tree();
+void move_file_select();
+void move_file();
+void select_location(int con);
+void save_tree();
+void location_p();
+void location_home();
+void File_rename();
+void rena();
