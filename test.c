@@ -822,32 +822,29 @@ void change_l(){
     cur3 = cur;
     cur = least;
 }
-
 void Attrplus(){
 	if(cur == cur2){
 
 	attron(COLOR_PAIR(1));
-	printw("+%.*s",termx-1,cur -> a);
+	printw("++%.*s",termx-1,cur -> a);
 	attroff(COLOR_PAIR(1));
 	}else{
 	
-	printw("+%.*s",termx-1,cur -> a);
+	printw("++%.*s",termx-1,cur -> a);
 	}
 }
-
 void Attrminus(){
     if(cur == cur2){
 
     attron(COLOR_PAIR(1));
-    printw("-%.*s",termx-1,cur -> a);
+    printw("--%.*s",termx-1,cur -> a);
     attroff(COLOR_PAIR(1));
     }else{
     
-    printw("-%.*s",termx-1,cur -> a);
+    printw("--%.*s",termx-1,cur -> a);
     }
 
 }
-
 void Attr(){
     if(cur == cur2){
 
@@ -872,8 +869,8 @@ void print_tree(){
         if(cur -> op == 1){             //열린 디렉토리가 있을 때
             if(cur -> front -> op != 1 && cur -> front != start){
                 mvprintw(column, row, "\\");
-                printw("---%.*s",termx-1,cur -> a);
-            }
+                
+            		Attrminus();}
             else
 				Attr();
             if(cur -> clos == 1)
@@ -884,19 +881,18 @@ void print_tree(){
         else if(cur -> clos == 1){ //열린 디렉토리의 마지막 파일일 때
             if(i == 0){                 //열린 디렉토리 파일이 하나만 있을 때
                 if (cur->type == DT_DIR)
-                    printw("+++%.*s",termx-1,cur -> a);
-                else if (cur->type == DT_REG)
-                    printw("%.*s",termx-1,cur -> a);
-                column = y + 1;
+                	Attrplus();
+				else if (cur->type == DT_REG)
+          	    	Attr();
+					column = y + 1;
             }
             else{
                 mvprintw(column, row, "\\");
                 
                 if (cur->type == DT_DIR)
-                    printw("+++%.*s",termx-1,cur -> a);
-                else if (cur->type == DT_REG)
-                    printw("---%.*s",termx-1,cur -> a);
-
+                	Attrplus();
+				else if (cur->type == DT_REG)
+					Attrminus();
                 getyx(stdscr, y, x);
                 column = y + 1;
             }
@@ -912,18 +908,17 @@ void print_tree(){
         }
         else if(i == 0){
             if (cur->type == DT_DIR)
-                    printw("+++%.*s",termx-1,cur -> a);
-            else if (cur->type == DT_REG)
-                    printw("%.*s",termx-1,cur -> a);
+            	Attrplus();
+			else if (cur->type == DT_REG)
+				Attr();
             column = y + 1;
         }
         else{
             mvprintw(column, row, "|");
             
             if (cur->type == DT_DIR)
-                printw("+++%.*s",termx-1,cur -> a);
+				Attrplus();
             else if (cur->type == DT_REG)
-                printw("---%.*s",termx-1,cur -> a);
 
 				Attrminus();
             getyx(stdscr, y, x);
