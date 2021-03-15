@@ -407,6 +407,12 @@ void select_location(int con){
             break;
         print_menu(11);
         snprintf(strbuf,PATH_MAX,"%s",wd);
+		attron(COLOR_PAIR(2));
+		printw("   --------------------------------\n");
+		printw("   Selected File : %s\n",File_n);
+		
+		printw("   --------------------------------\n\n");
+		attroff(COLOR_PAIR(2));
         printw("%.*s",termx-1,strbuf);
         cur = start -> back;
         if(start -> back -> back == NULL)
@@ -481,6 +487,7 @@ void move_file_select(){
             }
             break;
             case 'm':
+			strcpy(File_n,cur2->a);
             move_file();
             select_location(1);
             return ;
@@ -1406,6 +1413,7 @@ int main(){
     snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
     strcpy(cur2 -> a, strbuf);
 	init_pair(1,COLOR_BLUE,COLOR_BLACK);
+	init_pair(2,COLOR_CYAN,COLOR_BLACK);
     while(1)    //탈출 조건-> x눌렀을때.
     {
         getmaxyx(curscr,termy,termx);     //가로세로 구하기
