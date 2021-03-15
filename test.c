@@ -324,6 +324,12 @@ void select_location(int con){
         printw("| MENU | 1. Quit\n\n");
         printw("|| Select directory where to paste your file with press 'p' ||\n\n   || If you want to select home directory, press 'h' ||\n\n");
         snprintf(strbuf,PATH_MAX,"%s",wd);
+		attron(COLOR_PAIR(2));
+		printw("   --------------------------------\n");
+		printw("   Selected File : %s\n",File_n);
+		
+		printw("   --------------------------------\n\n");
+		attroff(COLOR_PAIR(2));
         printw("%.*s",termx-1,strbuf);
         cur = start -> back;
         if(start -> back -> back == NULL)
@@ -398,6 +404,7 @@ void move_file_select(){
             }
             break;
             case 'm':
+			strcpy(File_n,cur2->a);
             move_file();
             select_location(1);
             return ;
@@ -1292,6 +1299,7 @@ int main(){
     strcpy(cur2 -> a, strbuf);
     strcpy(tp, wd);         //wd는 최상위 디렉토리 경로로 바뀌지 않음
 	init_pair(1,COLOR_BLUE,COLOR_BLACK);
+	init_pair(2,COLOR_CYAN,COLOR_BLACK);
     while(1)    //탈출 조건-> x눌렀을때.
     {
         getmaxyx(curscr,termy,termx);     //가로세로 구하기
