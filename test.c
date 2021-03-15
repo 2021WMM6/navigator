@@ -746,6 +746,44 @@ void change_l(){
     cur3 = cur;
     cur = least;
 }
+
+void Attrplus(){
+	if(cur == cur2){
+
+	attron(COLOR_PAIR(1));
+	printw("+%.*s",termx-1,cur -> a);
+	attroff(COLOR_PAIR(1));
+	}else{
+	
+	printw("+%.*s",termx-1,cur -> a);
+	}
+}
+
+void Attrminus(){
+    if(cur == cur2){
+
+    attron(COLOR_PAIR(1));
+    printw("-%.*s",termx-1,cur -> a);
+    attroff(COLOR_PAIR(1));
+    }else{
+    
+    printw("-%.*s",termx-1,cur -> a);
+    }
+
+}
+
+void Attr(){
+    if(cur == cur2){
+
+    attron(COLOR_PAIR(1));
+    printw("%.*s",termx-1,cur -> a);
+    attroff(COLOR_PAIR(1));
+    }else{
+    
+    printw("%.*s",termx-1,cur -> a);
+    }
+
+}
 //precondition: cur은 start -> back의 주소값을 가져야 한다.
 //postcondition: 링크드 리스트의 파일들을 tree view형식으로 출력한다.
 void print_tree(){
@@ -758,10 +796,14 @@ void print_tree(){
         if(cur -> op == 1){             //열린 디렉토리가 있을 때
             if(cur -> front -> op != 1 && cur -> front != start){
                 mvprintw(column, row, "\\");
-                printw("-%.*s",termx-1,cur -> a);
-            }
+                
+                if (cur->type == DT_DIR)
+                	Attrplus();
+				else if (cur->type == DT_REG)
+            		Attrminus();
+			}
             else
-                printw("%.*s",termx-1,cur -> a);
+				Attr();
             if(cur -> clos == 1)
                 check = 1;
             cur = cur -> back;
@@ -769,20 +811,16 @@ void print_tree(){
         }
         else if(cur -> clos == 1){ //열린 디렉토리의 마지막 파일일 때
             if(i == 0){                 //열린 디렉토리 파일이 하나만 있을 때
-                if (cur->type == DT_DIR)
-                    printw("+%.*s",termx-1,cur -> a);
-                else if (cur->type == DT_REG)
-                    printw("%.*s",termx-1,cur -> a);
-                column = y + 1;
+                Attr();
+				column = y + 1;
             }
             else{
                 mvprintw(column, row, "\\");
                 
                 if (cur->type == DT_DIR)
-                    printw("+%.*s",termx-1,cur -> a);
-                else if (cur->type == DT_REG)
-                    printw("-%.*s",termx-1,cur -> a);
-
+                	Attrplus();
+				else if (cur->type == DT_REG)
+					Attrminus();
                 getyx(stdscr, y, x);
                 column = y + 1;
             }
@@ -797,20 +835,17 @@ void print_tree(){
             return ;
         }
         else if(i == 0){
-            if (cur->type == DT_DIR)
-                    printw("+%.*s",termx-1,cur -> a);
-            else if (cur->type == DT_REG)
-                    printw("%.*s",termx-1,cur -> a);
-            column = y + 1;
+           Attr();
+		   column = y + 1;
         }
         else{
             mvprintw(column, row, "|");
             
             if (cur->type == DT_DIR)
-                printw("+%.*s",termx-1,cur -> a);
+				Attrplus();
             else if (cur->type == DT_REG)
-                printw("-%.*s",termx-1,cur -> a);
 
+				Attrminus();
             getyx(stdscr, y, x);
             column = y + 1;
         }
@@ -1097,11 +1132,25 @@ void print_detail(){
     printw("\n%-30s\tFile Type\tSize\tLast Modification\n\n", "File name");
     while(--termy > 0){
         if(cur -> clos == 1 || cur -> back == &TAIL){
-            printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, cur -> a, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
-            break;
+			
+		    if(cur == cur2){
+        		attron(COLOR_PAIR(1));
+        		printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, cur -> a, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
+       			attroff(COLOR_PAIR(1));
+				break;
+        	}else{      
+            	printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, cur -> a, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
+            	break;
+			}
         }
         else{
-            printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, cur -> a, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
+            if(cur == cur2){
+                attron(COLOR_PAIR(1));
+                printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, cur -> a, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
+                attroff(COLOR_PAIR(1));
+            }else{      
+                printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, cur -> a, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
+            }   
         }
         cur = cur -> back;
     }
@@ -1224,12 +1273,14 @@ void detail(){
 }
 
 int main(){
+	
     int ch;
     time_t lasttime;
     initscr();
     cbreak();   //no linebuffering
     noecho();   //no echo of inputs
     nodelay(stdscr,TRUE);
+	start_color();
     keypad(stdscr,TRUE);    //enable keypad, arrows
     getcwd(wd,PATH_MAX);    //현재 디렉토리 가져오기
     save_tree(); //파일 정보 링크드리스트에 저장
@@ -1237,6 +1288,7 @@ int main(){
     snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
     strcpy(cur2 -> a, strbuf);
     strcpy(tp, wd);         //wd는 최상위 디렉토리 경로로 바뀌지 않음
+	init_pair(1,COLOR_BLUE,COLOR_BLACK);
     while(1)    //탈출 조건-> x눌렀을때.
     {
         getmaxyx(curscr,termy,termx);     //가로세로 구하기
