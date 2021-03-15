@@ -671,22 +671,22 @@ void select_search_list(){
 //               cur2가 가리키는 파일에 ()를 붙여준다.
 void get_name(){
     char name1[100];
-    mvprintw(0,86,"------------------------------------------\n");
+    mvprintw(0,40,"------------------------------------------\n");
     for(int i=1;i<5;i++){
-        mvprintw(i,85,"|                                          |");
+        mvprintw(i,39,"|                                          |");
     }
-    mvprintw(5,86,"------------------------------------------\n");
-    mvprintw(1,86,"File Name: ");
+    mvprintw(5,40,"------------------------------------------\n");
+    mvprintw(1,40,"File Name: ");
     nocbreak();
     echo();
     nodelay(stdscr,FALSE);
-    mvscanw(1,97,"%s",name1);
+    mvscanw(1,51,"%s",name1);
     search(name1);
     if(temp == 1){
         select_search_list();
     }
     else{
-        mvprintw(3,86,"name not found : press enter to exit");
+        mvprintw(3,40,"name not found : press enter to exit");
         refresh();
         getch();
         nodelay(stdscr,TRUE);
@@ -706,15 +706,22 @@ void print_search_list(){
         cur = cur -> front;
     while(cur -> back != NULL && cur -> front -> clos != 1){
         if(cur -> search_list == 1){
-            mvprintw(i,85,"|                                          |");
-            mvprintw(i, 86, "%s", cur -> a);
-            i++;
+            mvprintw(i,39,"|                                          |");
+			if(cur==cur2){
+			attron(COLOR_PAIR(1));
+            mvprintw(i, 40, "%s", cur -> a);
+			attroff(COLOR_PAIR(1));
+			}else{
+
+            mvprintw(i, 40, "%s", cur -> a);
+            }
+			i++;
         }
         cur = cur -> back;
     }
-    mvprintw(i,85,"|                                          |");
-    mvprintw(i,85,"|           press button 1 to exit         |");
-    mvprintw(i + 1,86,"------------------------------------------\n");
+    mvprintw(i,39,"|                                          |");
+    mvprintw(i,39,"|           press button 1 to exit         |");
+    mvprintw(i + 1,40,"------------------------------------------\n");
 }
 //precondition: cur2가 NULL값을 가지면 안 된다.
 //postcondition: detail 정보를 옆에 출력해준 상태에서 searching 기능을 실행시켜 주고 기능이 끝나면 화면을 clear해 준다.
