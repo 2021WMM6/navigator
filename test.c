@@ -784,7 +784,6 @@ void Attr(){
     }
 
 }
-
 //precondition: cur은 start -> back의 주소값을 가져야 한다.
 //postcondition: 링크드 리스트의 파일들을 tree view형식으로 출력한다.
 void print_tree(){
