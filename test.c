@@ -865,22 +865,22 @@ void Attrplus(){
 	if(cur == cur2){
 
 	attron(COLOR_PAIR(1));
-	printw("++%.*s",termx-1,cur -> a);
+	printw("+++%.*s",termx-1,cur -> a);
 	attroff(COLOR_PAIR(1));
 	}else{
 	
-	printw("++%.*s",termx-1,cur -> a);
+	printw("+++%.*s",termx-1,cur -> a);
 	}
 }
 void Attrminus(){
     if(cur == cur2){
 
     attron(COLOR_PAIR(1));
-    printw("--%.*s",termx-1,cur -> a);
+    printw("---%.*s",termx-1,cur -> a);
     attroff(COLOR_PAIR(1));
     }else{
     
-    printw("--%.*s",termx-1,cur -> a);
+    printw("---%.*s",termx-1,cur -> a);
     }
 
 }
