@@ -780,7 +780,8 @@ void delete_l(){
     cur = cur -> front;
     free(p);
 }
-
+//precondition: tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다. ch는 디렉토리의 이름을 가지고 있어야 한다.
+//postcondition: 디렉토리안에 존재하는 파일들의 크기의 합을 return한다.
 int dir_size(char *ch){
     long int sum = 0;
     snprintf(strex, PATH_MAX*2, "%s/%s", tp, ch);
@@ -993,8 +994,8 @@ void open_dir(){
         empty = 1;
     }
 }
-//precondition:  cur2는 열어놓은 디렉토리 안의 파일들 중 첫번쨰 파일을 포인트하고 있어야한다. 
-//               dp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
+//precondition: cur2는 열어놓은 디렉토리 안의 파일들 중 첫번쨰 파일을 포인트하고 있어야한다. 
+//              dp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
 //postcondition: 열어놓은 디렉토리의 파일들을 링크드리스에서 삭제하고 열었었던 디렉토리의 op값을 0으로 변경한다.
 //               cur2는 닫은 디렉토리를 포인트하고 있고, 바뀐 경로를 tp와 dp에 문자열로 저장한다.
 void close_dir(){
