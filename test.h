@@ -106,3 +106,4 @@ void location_p();
 void location_home();
 void File_rename();
 void rena();
+void move_key(char);
