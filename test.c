@@ -1317,14 +1317,12 @@ int main(){
     strcpy(cur2 -> a, strbuf);
 	init_pair(1,COLOR_BLUE,COLOR_BLACK);
 	init_pair(2,COLOR_CYAN,COLOR_BLACK);
-    while(1)    //탈출 조건-> x눌렀을때.
-    {
+    while(1){   //탈출 조건-> x눌렀을때.
         getmaxyx(curscr,termy,termx);     //가로세로 구하기
         lasttime=time(NULL);
         clear();
         //printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
-        switch(ch)
-        {
+        switch(ch){
             case KEY_DOWN:
             //TODO: 커서 다운
             move_key('D');
