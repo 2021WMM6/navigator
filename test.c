@@ -1,9 +1,10 @@
-#include "test.h"
+#include "test.h"   //헤더 파일 test.h 따로 정의
 
 int pop(){return top == 0 ? -1 : stack[--top];}
 void push(int a){stack[top++] = a;}
 int tops(){return top == 0 ? -1 : stack[top - 1];}
 
+//메뉴 출력
 void print_menu(int n) {
     switch(n) {
         case 1:
@@ -91,10 +92,6 @@ void print_menu(int n) {
             printw("|==================================|\n\n");
     }
 }
-
-char newname[100];
-char curname[100];
-char lastname[103];
 //precondition: xpath는 복사할 파일의 경로를 가지고 있어야 하고 strbuf는 그 파일이 복사될 경로를 가지고 있어야 한다.
 //postcondition: xpath 경로의 파일을 strbuf 경로에 복사시킨다.
 int copy(){
@@ -133,29 +130,11 @@ void copy_file_select(){
         {
             case KEY_DOWN:
             //TODO: 커서 다운
-            if(cur2 -> back -> back != NULL){
-                if(cur2 -> clos == 0){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = cur2 -> back;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-                }
-            }
+            move_key('D');
             break;
             case KEY_UP:
             //TODO: 커서 업
-            if(cur2 -> front != start){
-                if(cur2 -> front -> op == 0){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = cur2 -> front;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-                }
-            }
+            move_key('U');
             break;
             case 'c':
             if(cur2 -> type == DT_DIR){
@@ -182,7 +161,6 @@ void copy_file_select(){
     }
     clear();
 }
-
 void rena(){
 //  snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
  //   strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -222,29 +200,11 @@ void File_rename(){
         {
             case KEY_DOWN:
             //TODO: 커서 다운
-            if(cur2 -> back -> back != NULL){
-                if(cur2 -> clos == 0){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = cur2 -> back;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-                }
-            }
+            move_key('D');
             break;
             case KEY_UP:
             //TODO: 커서 업
-            if(cur2 -> front != start){
-                if(cur2 -> front -> op == 0){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = cur2 -> front;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-                }
-            }
+            move_key('U');
             break;
             case 'r':
 
@@ -348,51 +308,19 @@ void select_location(int con){
         {
             case KEY_DOWN:
             //TODO: 커서 다운
-            if(cur2 -> back -> back != NULL){
-                if(cur2 -> clos == 0){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = cur2 -> back;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-                }
-            }
+            move_key('D');
             break;
             case KEY_UP:
             //TODO: 커서 업
-            if(cur2 -> front != start){
-                if(cur2 -> front -> op == 0){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = cur2 -> front;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-                }
-            }
+            move_key('U');
             break;
             case KEY_LEFT:
             //TODO: 커서 왼쪽(이전 위치)
-            if(cur2 -> front -> op != 0){
-                empty = 0;
-                close_dir();        //디렉토리 닫기
-                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                strcpy(cur2 -> a, strbuf);
-            }
+            move_key('L');
             break;
             case KEY_RIGHT:
             //TODO: 커서 오른쪽(디렉토리 들어가기/동작없음)
-            if(cur2 -> type == DT_DIR && cur2 -> op == 0){
-                snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                open_dir();         //디렉토리 열기
-                if(cur2 -> op == 1)
-                    cur2 = cur2 -> back;
-                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                strcpy(cur2 -> a, strbuf);
-            }
+            move_key('R');
             break;
             case 'p':
             if(cur2 -> type != DT_DIR)
@@ -462,29 +390,11 @@ void move_file_select(){
         {
             case KEY_DOWN:
             //TODO: 커서 다운
-            if(cur2 -> back -> back != NULL){
-                if(cur2 -> clos == 0){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = cur2 -> back;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-                }
-            }
+            move_key('D');
             break;
             case KEY_UP:
             //TODO: 커서 업
-            if(cur2 -> front != start){
-                if(cur2 -> front -> op == 0){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = cur2 -> front;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-                }
-            }
+            move_key('U');
             break;
             case 'm':
 			strcpy(File_n,cur2->a);
@@ -550,29 +460,11 @@ void delete_file_select(){
         {
             case KEY_DOWN:
             //TODO: 커서 다운
-            if(cur2 -> back -> back != NULL){
-                if(cur2 -> clos == 0){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = cur2 -> back;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-                }
-            }
+            move_key('D');
             break;
             case KEY_UP:
             //TODO: 커서 업
-            if(cur2 -> front != start){
-                if(cur2 -> front -> op == 0){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = cur2 -> front;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-                }
-            }
+            move_key('U');
             break;
             case 'd':
             delete_file();
@@ -1163,7 +1055,7 @@ void print_pin(){
 //precondition: cur2가 NULL값을 가지거나 현재 디렉토리 밖의 파일을 포인트하면 안 된다.
 //postcondition: 현재 ()로 가리키고 있는 파일들을 p를 눌러서 Pin list에 추가하거나 뺄 수 있고 1누르면 Pin 기능을 종료한다.
 void use_pin(){
-    int ch;
+    int ch = 0;
     time_t lasttime;
     while(1)    //탈출 조건-> 1 눌렀을때.
     {
@@ -1174,29 +1066,11 @@ void use_pin(){
         {
             case KEY_DOWN:
             //TODO: 커서 다운
-            if(cur2 -> back -> back != NULL){
-                if(cur2 -> clos == 0){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = cur2 -> back;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-                }
-            }
+            move_key('D');
             break;
             case KEY_UP:
             //TODO: 커서 업
-            if(cur2 -> front != start){
-                if(cur2 -> front -> op == 0){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = cur2 -> front;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-                }
-            }
+            move_key('U');
             break;
             case 'p':
             if(cur2 -> pin == 1)
@@ -1219,7 +1093,7 @@ void use_pin(){
 //precondition: tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
 //postcondition: Pin기능을 사용할 것인지 메뉴로 출력하고 1을 누르면 Pin기능과 정렬 기능을 실행, 2를 누르면 정렬 기능만 실행한다.
 void sorting_pin(){
-    char ch;
+    int ch = 0;
     time_t lasttime;
     print_menu(13);
     printw("%.*s\n",termx-1, tp);
@@ -1333,29 +1207,11 @@ void detail(){
         {
             case KEY_DOWN:
             //TODO: 커서 다운
-            if(cur2 -> back -> back != NULL){
-                if(cur2 -> clos == 0){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = cur2 -> back;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-                }
-            }
+            move_key('D');
             break;
             case KEY_UP:
             //TODO: 커서 업
-            if(cur2 -> front != start){
-                if(cur2 -> front -> op == 0){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = cur2 -> front;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-                }
-            }
+            move_key('U');
             break;
             case '2':
             sorting_pin();        //정렬 기능
@@ -1396,9 +1252,55 @@ void detail(){
     }
     clear();
 }
-
+void move_key(char key){
+    switch(key){
+        case 'R':
+        if(cur2 -> type == DT_DIR && cur2 -> op == 0){
+            snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+            strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+            cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+            open_dir();         //디렉토리 열기
+            if(cur2 -> op == 1)
+                cur2 = cur2 -> back;
+            snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+            strcpy(cur2 -> a, strbuf);
+        }
+        break;
+        case 'L':
+        if(cur2 -> front -> op != 0){
+            empty = 0;
+            close_dir();        //디렉토리 닫기
+            snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+            strcpy(cur2 -> a, strbuf);
+        }
+        break;
+        case 'U':
+        if(cur2 -> front != start){
+            if(cur2 -> front -> op == 0){
+                snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                cur2 = cur2 -> front;
+                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                strcpy(cur2 -> a, strbuf);
+            }
+        }
+        break;
+        case 'D':
+        if(cur2 -> back -> back != NULL){
+            if(cur2 -> clos == 0){
+                snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
+                cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
+                cur2 = cur2 -> back;
+                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                strcpy(cur2 -> a, strbuf);
+            }
+        }
+        break;
+    }
+}
 int main(){
-	
     int ch;
     time_t lasttime;
     initscr();
@@ -1425,51 +1327,19 @@ int main(){
         {
             case KEY_DOWN:
             //TODO: 커서 다운
-            if(cur2 -> back -> back != NULL){
-                if(cur2 -> clos == 0){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = cur2 -> back;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-                }
-            }
+            move_key('D');
             break;
             case KEY_UP:
             //TODO: 커서 업
-            if(cur2 -> front != start){
-                if(cur2 -> front -> op == 0){
-                    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                    cur2 = cur2 -> front;
-                    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                    strcpy(cur2 -> a, strbuf);
-                }
-            }
+            move_key('U');
             break;
             case KEY_LEFT:
             //TODO: 커서 왼쪽(이전 위치)
-            if(cur2 -> front -> op != 0){
-                empty = 0;
-                close_dir();        //디렉토리 닫기
-                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                strcpy(cur2 -> a, strbuf);
-            }
+            move_key('L');
             break;
             case KEY_RIGHT:
             //TODO: 커서 오른쪽(디렉토리 들어가기/동작없음)
-            if(cur2 -> type == DT_DIR && cur2 -> op == 0){
-                snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                open_dir();         //디렉토리 열기
-                if(cur2 -> op == 1)
-                    cur2 = cur2 -> back;
-                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                strcpy(cur2 -> a, strbuf);
-            }
+            move_key('R');
             break;
             case '1':   //1번 누르면 detail 모드로 바뀜
             if(empty == 1){
