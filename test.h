@@ -18,7 +18,8 @@ char tp[PATH_MAX];      //현재 디렉토리 경로
 char strbuf[PATH_MAX];
 char xpath[PATH_MAX];
 char strex[PATH_MAX];
-char name[100];
+char curstr[PATH_MAX];
+char name[PATH_MAX];
 
 typedef struct list{
     char a[PATH_MAX];       //파일 이름
@@ -46,7 +47,8 @@ linked *cur3 = NULL;    //여러가지 상황에서 쓰이는 임시 링크드 �
 linked *cur4 = NULL;
 linked *least = NULL;   //least는 sort기능에서 최솟값을 가지는 링크드리스트를 가리키는 포인터
 
-int temp = 0;
+int type_ex = 0;        //파일의 type 정보 임시로 저장
+int temp = 0;           //bool 형으로 여러가지 상황에서 쓰임
 int x, y, row, column = 0;
 int check = 0;          //check는 디렉토리를 open했을 때 open한 디렉토리가 같은 경로에 있는 다른 파일들 중 마지막일 때만 1값을 가짐
 int stack[10001] = {0};

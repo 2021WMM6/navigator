@@ -234,9 +234,6 @@ void File_rename(){
 //postcondition: 1) 이동시키려는 파일을 선택한 디렉토리에 이동시킨다. 열려있는 모든 디렉토리를 닫아준다.
 //               2) 복사시키려는 파일을 선택한 디렉토리에 복사시킨다. 열려있는 모든 디렉토리를 닫아준다.
 void location_p(int con){
-    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
     snprintf(strbuf, PATH_MAX*3, "%s/%s/%s", tp, cur2 -> a, strex);
     if(con == 1){
         rename(xpath, strbuf);
@@ -254,8 +251,6 @@ void location_p(int con){
         cur2 = cur2 -> front;
     }
     cur2 = start -> back;
-    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-    strcpy(cur2 -> a, strbuf);
 }
 //precondition: cur2가 이동하려는 디렉토리를 포인트하고 있어야 한다. wd는 기본 디렉토리의 경로를 문자열로 가지고 있어야 한다.
 //              strex는 이동시킬 파일의 이름을 가지고 있어야 한다. xpath는 이동시키고 싶은 파일의 경로를 가지고 있어야 한다.
@@ -265,9 +260,6 @@ void location_p(int con){
 //               링크드 리스트에 이동/복사시킨 파일의 정보를 start -> back 에 추가해주고 cur2는 추가한 파일을 포인트하고 있다. 
 //               tree view를 출력해주고 함수를 종료한다.
 void location_home(int con){
-    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
     snprintf(strbuf, PATH_MAX*2, "%s/%s", wd, strex);
     if(con == 1)
         rename(xpath, strbuf);
@@ -275,7 +267,7 @@ void location_home(int con){
         copy();
     char *str = strex;
     snprintf(strbuf, PATH_MAX*2, "%s/%s", wd, str);
-    temp = move_type;
+    type_ex = move_type;
     cur = start;
     insert_l(str);
     while(cur2 -> front != start){
@@ -284,8 +276,6 @@ void location_home(int con){
         cur2 = cur2 -> front;
     }
     cur2 = start -> back;
-    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-    strcpy(cur2 -> a, strbuf);
     clear();
     print_tree();
     refresh();
@@ -356,9 +346,6 @@ void select_location(int con){
 //               strex에 이동시킬 파일의 이름을 문자열로 저장하고, move_type에 이동시킬 파일의 type값을 저장한다.
 //               xpath에 이동시킬 파일의 경로를 문자열로 저장한다.
 void move_file(){
-    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
     snprintf(xpath, PATH_MAX*2, "%s/%s", tp, cur2 -> a);
     strcpy(strex, cur2 -> a);
     move_type = cur2 -> type;
@@ -372,8 +359,6 @@ void move_file(){
         temp = 0;
     }
     cur3 = cur2;
-    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-    strcpy(cur2 -> a, strbuf);
 }
 //precondition: cur2가 NULL값을 가지거나 현재 디렉토리 밖의 파일을 포인트하면 안 된다.
 //postcondition: 화면에 메뉴와 detail 정보를 출력시켜주고 키보드를 통해 ()로 내가 이동시키려고 하는 파일을 선택한다.
@@ -419,9 +404,6 @@ void move_file_select(){
 //precondition: cur2가 삭제하고자 하는 파일을 포인트하고 있어야 한다. tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
 //postcondition: 삭제하고자 하는 파일의 정보를 링크드리스테에서 삭제하고 실제로 파일을 제거한다. cur2는 삭제한 파일의 앞이나 뒤를 포인트한다.
 void delete_file(){
-    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
     snprintf(strbuf, PATH_MAX*2, "%s/%s", tp, cur2 -> a);
     if(remove(strbuf) == 0){
         cur = cur2;
@@ -443,8 +425,6 @@ void delete_file(){
         while(getch() != '1');
         clear();
     }
-    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-    strcpy(cur2 -> a, strbuf);
 }
 //precondition: cur2가 NULL값을 가지면 안 된다.
 //postcondition: 메뉴창을 출력하고 키보드를 통해 ()로 내가 삭제하고자 하는 파일을 포인터한 후 제거한다. '1'을 누르면 delete기능을 종료한다.
@@ -516,8 +496,6 @@ void select_search_list(){
     cbreak();   
     noecho();
     nodelay(stdscr,TRUE);
-    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-    strcpy(cur2 -> a, strbuf);
     while(1)    //탈출 조건-> 1 눌렀을때.
     {
         getmaxyx(curscr,termy,termx);     //가로세로 구하기
@@ -527,33 +505,23 @@ void select_search_list(){
             case KEY_DOWN:
             //TODO: 커서 다운
             if(cur2 -> back -> back != NULL && cur2 -> clos == 0){
-                snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
                 cur = cur2;
                 do{
                     cur = cur -> back;
                 } while (cur -> search_list != 1 && cur -> back != NULL && cur -> front -> clos == 0);
                 if(cur -> back != NULL && cur -> front -> clos == 0)
                     cur2 = cur;
-                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                strcpy(cur2 -> a, strbuf);
             }
             break;
             case KEY_UP:
             //TODO: 커서 업
             if(cur2 -> front != start && cur2 -> front -> op == 0){
-                snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
                 cur = cur2;
                 do{
                     cur = cur -> front;
                 } while (cur -> search_list != 1 && cur != start && cur -> back -> op == 0);
                 if(cur != start && cur -> back -> op == 0)
                     cur2 = cur;
-                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                strcpy(cur2 -> a, strbuf);
             }
             break;
         }
@@ -628,9 +596,6 @@ void print_search_list(){
 void use_search(){
     int ch;
     time_t lasttime;
-    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
     getmaxyx(curscr,termy,termx);     //가로세로 구하기
     lasttime=time(NULL);
     clear();
@@ -663,7 +628,7 @@ void save_tree(){
     dirp = opendir(wd);
     while((diritem=readdir(dirp)) != NULL){
         if(strncmp(diritem -> d_name, ".", 1) != 0){
-            temp = diritem -> d_type;
+            type_ex = diritem -> d_type;
             char *str = diritem->d_name;
             snprintf(strbuf, PATH_MAX*2, "./%s", str);
             insert_l(str);
@@ -684,26 +649,26 @@ void delete_l(){
 //postcondition: 디렉토리안에 존재하는 파일들의 크기의 합을 return한다.
 int dir_size(char *ch){
     long int sum = 0;
-    snprintf(strex, PATH_MAX*2, "%s/%s", tp, ch);
+    snprintf(strbuf, PATH_MAX*2, "%s/%s", tp, ch);
     DIR *dirp;      //디렉토리 포인터
     struct dirent *diritem;    //디렉토리 항목 포인터
-    dirp = opendir(strex);
+    dirp = opendir(strbuf);
     while((diritem=readdir(dirp)) != NULL){
         if(strncmp(diritem -> d_name, ".", 1) != 0){        //.으로 시작하는 파일 제외하고 링크드 리스트에 저장
             char *str = diritem->d_name;
-            snprintf(xpath, PATH_MAX*2, "%s/%s",strex, str);
-            stat(xpath, &st);
+            snprintf(name, PATH_MAX*2, "%s/%s",strbuf, str);
+            stat(name, &st);
             sum += st.st_size;
         }
     }
     return sum;
 }
-//precondition: ch는 readdir로 읽은 파일의 이름으로 NULL이면 안 된다. strbuf는 파일의 경로를 저장하고 있어야 한다. temp는 파일의 type정보를 가지고 있어야 한다.
+//precondition: ch는 readdir로 읽은 파일의 이름으로 NULL이면 안 된다. strbuf는 파일의 경로를 저장하고 있어야 한다. type_ex는 파일의 type정보를 가지고 있어야 한다.
 //postcondition: 동적으로 할당된 메모리에 파일 정보를 저장하여 링크드리스트에 삽입한다.
 void insert_l(char *ch){
     linked *p = (linked *)malloc(sizeof(linked));
     strcpy(p -> a, ch);
-    p -> type = temp;
+    p -> type = type_ex;
     p -> op = 0;
     p -> clos = 0;
     p -> pin = 0;
@@ -759,7 +724,7 @@ void Attrplus(){
 	if(cur == cur2){
 
 	attron(COLOR_PAIR(1));
-	printw("+++%.*s",termx-1,cur -> a);
+	printw("+++(%.*s)",termx-1,cur -> a);
 	attroff(COLOR_PAIR(1));
 	}else{
 	
@@ -770,7 +735,7 @@ void Attrminus(){
     if(cur == cur2){
 
     attron(COLOR_PAIR(1));
-    printw("---%.*s",termx-1,cur -> a);
+    printw("---(%.*s)",termx-1,cur -> a);
     attroff(COLOR_PAIR(1));
     }else{
     
@@ -782,7 +747,7 @@ void Attr(){
     if(cur == cur2){
 
     attron(COLOR_PAIR(1));
-    printw("%.*s",termx-1,cur -> a);
+    printw("(%.*s)",termx-1,cur -> a);
     attroff(COLOR_PAIR(1));
     }else{
     
@@ -880,7 +845,7 @@ void open_dir(){
     strcpy(tp, dp);
     while((diritem=readdir(dirp)) != NULL){
         if(strncmp(diritem -> d_name, ".", 1) != 0){        //.으로 시작하는 파일 제외하고 링크드 리스트에 저장
-            temp = diritem -> d_type;
+            type_ex = diritem -> d_type;
             char *str = diritem->d_name;
             snprintf(strbuf, PATH_MAX*2, "%s/%s",tp, str);
             insert_l(str);
@@ -975,9 +940,6 @@ void except_pin(){
 //precondition: cur2가 NULL값을 가지거나 현재 디렉토리 밖의 파일을 포인트하면 안 된다.
 //postcondition: 현재 디렉토리안의 파일을 ch값에 따라 파일이름, 크기, 수정날짜 중 하나를 선택하여 오름차순으로 정렬한다.
 void sort(char ch){
-    snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-    strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-    cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)
         cur = cur -> front;
@@ -988,8 +950,6 @@ void sort(char ch){
         sort_type(ch);
         cur = cur -> back;
     }
-    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-    strcpy(cur2 -> a, strbuf);
 }
 //precondition: tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
 //postcondition: Sorting을 어떤 기준으로 할 것인지 메뉴를 화면에 출력해주고 ch값을 입력받고 정렬 기능을 실행한다.
@@ -1132,7 +1092,8 @@ void print_detail(){
 			
 		    if(cur == cur2){
         		attron(COLOR_PAIR(1));
-        		printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, cur -> a, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
+                snprintf(curstr, PATH_MAX*2,"(%s)", cur -> a);
+        		printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, curstr, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
        			attroff(COLOR_PAIR(1));
 				break;
         	}else{      
@@ -1143,7 +1104,8 @@ void print_detail(){
         else{
             if(cur == cur2){
                 attron(COLOR_PAIR(1));
-                printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, cur -> a, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
+                snprintf(curstr, PATH_MAX*2,"(%s)", cur -> a);
+                printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, curstr, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
                 attroff(COLOR_PAIR(1));
             }else{      
                 printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, cur -> a, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
@@ -1258,45 +1220,28 @@ void move_key(char key){
     switch(key){
         case 'R':
         if(cur2 -> type == DT_DIR && cur2 -> op == 0){
-            snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-            strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-            cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
             open_dir();         //디렉토리 열기
             if(cur2 -> op == 1)
                 cur2 = cur2 -> back;
-            snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-            strcpy(cur2 -> a, strbuf);
         }
         break;
         case 'L':
         if(cur2 -> front -> op != 0){
             empty = 0;
             close_dir();        //디렉토리 닫기
-            snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-            strcpy(cur2 -> a, strbuf);
         }
         break;
         case 'U':
         if(cur2 -> front != start){
             if(cur2 -> front -> op == 0){
-                snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
                 cur2 = cur2 -> front;
-                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                strcpy(cur2 -> a, strbuf);
             }
         }
         break;
         case 'D':
         if(cur2 -> back -> back != NULL){
             if(cur2 -> clos == 0){
-                snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
-                strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
                 cur2 = cur2 -> back;
-                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-                strcpy(cur2 -> a, strbuf);
             }
         }
         break;
@@ -1316,8 +1261,6 @@ int main(){
     strcpy(tp, wd);         //wd는 최상위 디렉토리 경로로 바뀌지 않음
     save_tree(); //파일 정보 링크드리스트에 저장
     cur2 = end -> front;
-    snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-    strcpy(cur2 -> a, strbuf);
 	init_pair(1,COLOR_BLUE,COLOR_BLACK);
 	init_pair(2,COLOR_CYAN,COLOR_BLACK);
     while(1){   //탈출 조건-> x눌렀을때.
