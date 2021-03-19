@@ -1,4 +1,4 @@
-#include <stdio.h>                                                           
+#include <stdio.h>
 #include <ncurses.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -9,7 +9,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
-#define EXIT_KEY 'x'       //종료 키 x
+#define EXIT_KEY 'x'    //종료 키 x
 
 int termy,termx;
 char wd[PATH_MAX];
@@ -21,7 +21,7 @@ char strex[PATH_MAX];
 char name[100];
 
 typedef struct list{
-    char a[PATH_MAX];      //파일 이름
+    char a[PATH_MAX];       //파일 이름
     int type;               //파일 타입
     int op;                 //디렉토리일 때 그 디렉토리를 열면 1이 되고 닫으>면 다시 0이 됨
     int clos;               //어떤 디렉토리를 열었을 때 그 디렉토리의 마지막 파일이면 1로 저장, 그 외에는 0으로 저장
@@ -40,11 +40,11 @@ linked START;
 linked TAIL;
 linked *start = &START;
 linked *end = &TAIL;
-linked *cur;     //cur는 현재 가리키고 있는 링크드 리스트 주소 포인터 - 링크>드리스트 삭제, 삽입하는 등의 함수에 사용
+linked *cur;            //cur는 현재 가리키고 있는 링크드 리스트 주소 포인터 - 링크>드리스트 삭제, 삽입하는 등의 함수에 사용
 linked *cur2 = NULL;    //cur2는 cur와 하는 일은 같지만 키보드 값에 따라 현재 가리키고있는 파일에 ()표시하기 위해 사용
-linked *cur3 = NULL;     //여러가지 상황에서 쓰이는 임시 링크드 리스트 포인터
-linked *least = NULL;       //least는 sort기능에서 최솟값을 가지는 링크드리스트를 가리키는 포인터
+linked *cur3 = NULL;    //여러가지 상황에서 쓰이는 임시 링크드 리스트 포인터
 linked *cur4 = NULL;
+linked *least = NULL;   //least는 sort기능에서 최솟값을 가지는 링크드리스트를 가리키는 포인터
 
 int temp = 0;
 int x, y, row, column = 0;
@@ -53,15 +53,15 @@ int stack[10001] = {0};
 int top = 0;
 int empty = 0;
 int move_type = 0;
-char newname[100];
-char curname[100];
-char lastname[103];
+char newname[100];      //rename할때 바꿀 새로운 이름
+char curname[100];      //현재 이름
+char lastname[103];     //커서 포함할때 사용
 
 int pop();
 void push(int );
 int tops();
 
-void print_menu();
+void print_menu(int );
 int copy();
 void copy_file_select();
 void rena();

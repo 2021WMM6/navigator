@@ -380,13 +380,13 @@ void select_location(int con){
             case KEY_RIGHT:
             //TODO: 커서 오른쪽(디렉토리 들어가기/동작없음)
             if(cur2 -> type == DT_DIR && cur2 -> op == 0){
-                snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
+                snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1); //현재 디렉토리 
                 strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
                 cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
                 open_dir();         //디렉토리 열기
                 if(cur2 -> op == 1)
                     cur2 = cur2 -> back;
-                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);  //현재 커서를 괄호로 감사서 표시
                 strcpy(cur2 -> a, strbuf);
             }
             break;
@@ -1391,8 +1391,7 @@ void detail(){
     clear();
 }
 
-int main(){
-	
+int main(){	
     int ch;
     time_t lasttime;
     initscr();
@@ -1409,14 +1408,12 @@ int main(){
     strcpy(cur2 -> a, strbuf);
 	init_pair(1,COLOR_BLUE,COLOR_BLACK);
 	init_pair(2,COLOR_CYAN,COLOR_BLACK);
-    while(1)    //탈출 조건-> x눌렀을때.
-    {
+    while(1){   //탈출 조건-> x눌렀을때.
         getmaxyx(curscr,termy,termx);     //가로세로 구하기
         lasttime=time(NULL);
         clear();
         //printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
-        switch(ch)
-        {
+        switch(ch){
             case KEY_DOWN:
             //TODO: 커서 다운
             if(cur2 -> back -> back != NULL){
@@ -1454,14 +1451,14 @@ int main(){
             break;
             case KEY_RIGHT:
             //TODO: 커서 오른쪽(디렉토리 들어가기/동작없음)
-            if(cur2 -> type == DT_DIR && cur2 -> op == 0){
+            if(cur2 -> type == DT_DIR && cur2 -> op == 0){      //현재 커서가 디렉토리에 있는 경우
                 snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
                 strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
-                cur2 -> a[strlen(cur2 -> a) - 2] = '\0';
-                open_dir();         //디렉토리 열기
+                cur2 -> a[strlen(cur2 -> a) - 2] = '\0';        //문자열 끝 자르기
+                open_dir();                                     //cur2 디렉토리 열기
                 if(cur2 -> op == 1)
                     cur2 = cur2 -> back;
-                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
+                snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);  //커서 항목 괄호로 감싸 출력
                 strcpy(cur2 -> a, strbuf);
             }
             break;
