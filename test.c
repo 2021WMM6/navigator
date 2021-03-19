@@ -576,12 +576,12 @@ void print_search_list(){
         if(cur -> search_list == 1){
             mvprintw(i,39,"|                                          |");
 			if(cur==cur2){
-			attron(COLOR_PAIR(1));
-            mvprintw(i, 40, "%s", cur -> a);
-			attroff(COLOR_PAIR(1));
-			}else{
-
-            mvprintw(i, 40, "%s", cur -> a);
+                attron(COLOR_PAIR(1));
+                mvprintw(i, 40, "(%s)", cur -> a);
+                attroff(COLOR_PAIR(1));
+			}
+            else{
+                mvprintw(i, 40, "%s", cur -> a);
             }
 			i++;
         }
