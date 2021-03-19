@@ -1,9 +1,10 @@
-#include "test.h"
+#include "test.h"   //헤더 파일 test.h 따로 정의
 
 int pop(){return top == 0 ? -1 : stack[--top];}
 void push(int a){stack[top++] = a;}
 int tops(){return top == 0 ? -1 : stack[top - 1];}
 
+//메뉴 출력
 void print_menu(int n) {
     switch(n) {
         case 1:
@@ -91,10 +92,6 @@ void print_menu(int n) {
             printw("|==================================|\n\n");
     }
 }
-
-char newname[100];
-char curname[100];
-char lastname[103];
 //precondition: xpath는 복사할 파일의 경로를 가지고 있어야 하고 strbuf는 그 파일이 복사될 경로를 가지고 있어야 한다.
 //postcondition: xpath 경로의 파일을 strbuf 경로에 복사시킨다.
 int copy(){
@@ -182,7 +179,6 @@ void copy_file_select(){
     }
     clear();
 }
-
 void rena(){
 //  snprintf(strbuf,PATH_MAX, "%s", cur2 -> a + 1);
  //   strncpy(cur2 -> a, strbuf, strlen(cur2 -> a) - 2);
@@ -787,7 +783,6 @@ void delete_l(){
     cur = cur -> front;
     free(p);
 }
-
 int dir_size(char *ch){
     long int sum = 0;
     snprintf(strex, PATH_MAX*2, "%s/%s", tp, ch);
