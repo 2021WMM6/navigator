@@ -119,7 +119,7 @@ int copy(){
 //               그리고 'c'을 누르면 move_file()을 호출해준 후 select_location()을 호출한 후 기능을 종료한다.
 //               위 경우가 아니더라도 '1'을 누를 경우 move기능을 종료한다.
 void copy_file_select(){
-    int ch;
+    int ch = 0;
     time_t lasttime;
     while(1)    //탈출 조건-> 1 눌렀을때.
     {
@@ -144,6 +144,7 @@ void copy_file_select(){
                 clear();
                 break;
             }
+            strcpy(File_n, cur2->a);
             move_file();
             select_location(2);
             return ;
@@ -296,7 +297,7 @@ void location_home(int con){
 //               'h'를 누르면 지금 선택하고 있는 파일과 상관없이 location_home()을 호출하여 기본(가장 상위의) 디렉토리에 파일을 이동/복사시키고 기능을 종료한다.
 //               위 경우가 아니더라도 '1'을 누를 경우 move기능을 종료한다.
 void select_location(int con){
-    int ch;
+    int ch = 0;
     time_t lasttime;
     while(1)    //탈출 조건-> x눌렀을때.
     {
@@ -397,7 +398,7 @@ void move_file_select(){
             move_key('U');
             break;
             case 'm':
-			strcpy(File_n,cur2->a);
+			strcpy(File_n, cur2->a);
             move_file();
             select_location(1);
             return ;
@@ -1252,6 +1253,7 @@ void detail(){
     }
     clear();
 }
+//키보드 UP, DOWN, LEFT, RIGHT일 경우에 따라 현재 위치 변경
 void move_key(char key){
     switch(key){
         case 'R':
@@ -1300,6 +1302,7 @@ void move_key(char key){
         break;
     }
 }
+
 int main(){
     int ch;
     time_t lasttime;

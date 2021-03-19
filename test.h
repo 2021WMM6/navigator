@@ -12,9 +12,9 @@
 #define EXIT_KEY 'x'    //종료 키 x
 
 int termy,termx;
-char wd[PATH_MAX];
-char dp[PATH_MAX];
-char tp[PATH_MAX];
+char wd[PATH_MAX];      //최상위 디렉토리 경로
+char dp[PATH_MAX];      //임시 디렉토리 경로
+char tp[PATH_MAX];      //현재 디렉토리 경로
 char strbuf[PATH_MAX];
 char xpath[PATH_MAX];
 char strex[PATH_MAX];
@@ -100,7 +100,7 @@ void select_search_list();
 void print_tree();
 void move_file_select();
 void move_file();
-void select_location(int con);
+void select_location(int);
 void save_tree();
 void location_p();
 void location_home();
