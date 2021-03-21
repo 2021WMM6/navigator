@@ -759,10 +759,12 @@ void Attr(){
 //postcondition: 링크드 리스트의 파일들을 tree view형식으로 출력한다.
 void print_tree(){
     int i = 0;
-    printw(" --- ");
+    if(termy> 7)
+        printw(" --- ");
     getyx(stdscr, y, x); //현재 커서 좌표 구하는 함수
     row = x - 3;
     push(row);      //row정보 stack에 저장
+    termy -= 6;
     while(--termy > 0){
         if(cur -> op == 1){             //열린 디렉토리가 있을 때
             if(cur -> front -> op != 1 && cur -> front != start){
@@ -774,6 +776,7 @@ void print_tree(){
             if(cur -> clos == 1)
                 check = 1;
             cur = cur -> back;
+            termy += 7;
             print_tree();
         }
         else if(cur -> clos == 1){ //열린 디렉토리의 마지막 파일일 때
@@ -1087,6 +1090,7 @@ void print_detail(){
     while(cur -> front -> op != 1 && cur -> front != start)
         cur = cur -> front;
     printw("\n%-30s\tFile Type\tSize\tLast Modification\n\n", "File name");
+    termy -= 15;
     while(--termy > 0){
         if(cur -> clos == 1 || cur -> back == &TAIL){
 			
@@ -1180,10 +1184,10 @@ void detail(){
             sorting_pin();        //정렬 기능
             break;
             case '3':
-			use_search();
+			use_search();           //검색 기능
             break;
             case '4':
-            use_edit();
+            use_edit();             //편집 기능
             if(temp == 1){
                 temp = 0;
                 return ;
@@ -1192,10 +1196,10 @@ void detail(){
         }
         print_menu(2);
         printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
-        if (ch == '1') //left누르면 tree view로 돌아감
+        if (ch == '1')      //'1'누르면 tree view로 돌아감
             break;
         cur = start -> back;
-        if(start -> back -> back == NULL || cur2 -> op == 1){
+        if(start -> back -> back == NULL || cur2 -> op == 1){           //delete 기능을 이용해서 디렉토리 안의 파일을 모두 제거했을 때
             cur2 -> op = 0;
             if(check != 1)
                 cur2 -> clos = 0;
@@ -1208,7 +1212,7 @@ void detail(){
             while((ch=getch()) != '1');
             break;
         }
-        print_detail(); // 현재 디렉토리 안에 있는 파일만 자세하게 출력;
+        print_detail();             // 현재 디렉토리 안에 있는 파일만 자세하게 출력;
         refresh();
         check = 0;
         while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
@@ -1267,7 +1271,6 @@ int main(){
         getmaxyx(curscr,termy,termx);     //가로세로 구하기
         lasttime=time(NULL);
         clear();
-        //printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
         switch(ch){
             case KEY_DOWN:
             //TODO: 커서 다운
@@ -1286,11 +1289,11 @@ int main(){
             move_key('R');
             break;
             case '1':   //1번 누르면 detail 모드로 바뀜
-            if(empty == 1){
+            if(empty == 1){             //디렉토리 안에 파일이 아무것도 없을 때
                 clear();
                 print_menu(3);
                 refresh();
-                while((ch=getch()) != '1');
+                while((ch=getch()) != '1');      //'1'누르면 tree view로 돌아감
                 clear();
                 break;
             }
@@ -1301,9 +1304,10 @@ int main(){
             break;
         print_menu(1);
         snprintf(strbuf,PATH_MAX,"%s",wd);
-        printw("%.*s",termx-1,strbuf);
+        if(termy-- > 8)
+            printw("%.*s",termx-1,strbuf);
         cur = start -> back;
-        if(start -> back -> back == NULL)
+        if(start -> back -> back == NULL)           //링크드 리스트에 아무런 자료도 없을 때
             break;
         print_tree(); // tree view 형식으로 출력
         refresh();
