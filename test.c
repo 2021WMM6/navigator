@@ -6,6 +6,7 @@ int tops(){return top == 0 ? -1 : stack[top - 1];}
 
 //메뉴 케이스 출력
 void print_menu(int n) {
+    int k;
     switch(n) {
         case 1:
             printw("|============== MENU ==============|\n\n");
@@ -14,12 +15,18 @@ void print_menu(int n) {
             printw("|==================================|\n\n");
             break;
         case 2:
-            printw("|============== MENU ==============|\n\n");
-            printw("\t1. Go Back\n\n");
-            printw("\t2. Sorting\n\n");
-            printw("\t3. Searching\n\n");
-            printw("\t4. Editing\n\n");
-            printw("|==================================|\n\n");
+            printw("|");
+            for(k = 0; k < 36; k++)     //줄 출력
+                printw("=");
+            printw(" MENU ");
+            for(k = 0; k < 36; k++)     //줄 출력
+                printw("=");
+            printw("|\n");
+            printw("\t1. Go Back\t2. Sorting\t3. Searching\t 4. Editing\n");
+            printw("|");
+            for(k = 0; k < 78; k++)     //줄 출력
+                printw("=");
+            printw("|\n");
             break;
         case 3:
             printw("|==================================|\n\n");
@@ -42,10 +49,15 @@ void print_menu(int n) {
             printw("|==================================|\n\n");
             break;
         case 6:
-            printw("|==================================|\n\n");
-            printw("\t1. Quit\n\n");
-            printw(" If you want to use pin, press 'p'\n\n");
-            printw("|==================================|\n\n");
+            printw("|");
+            for(k = 0; k < 78; k++)     //줄 출력
+                printw("=");
+            printw("|\n");
+            printw("\t1. Quit\t\tP. Use pin\n");
+            printw("|");
+            for(k = 0; k < 78; k++)     //줄 출력
+                printw("=");
+            printw("|\n");
             break;
         case 7:
             printw("\n|========= Editing Option =========|\n\n");
@@ -90,6 +102,12 @@ void print_menu(int n) {
             printw("|==================================|\n\n");
             printw("\tX. Quit\n\n");
             printw("|==================================|\n\n");
+            break;
+        case 14:
+            attron(COLOR_PAIR(2));
+            printw(" PATH : %.*s\n",termx-1, tp);     //현재 경로 출력
+            attroff(COLOR_PAIR(2));
+            break;
     }   //케이스 번호별로 나누어서 메뉴를 출력. 각각의 경우마다 나누어 함수에서 필요로 하는 부분을 가져다가 사용
 }
 //precondition: xpath는 복사할 파일의 경로를 가지고 있어야 하고 strbuf는 그 파일이 복사될 경로를 가지고 있어야 한다.
@@ -577,7 +595,7 @@ void use_search(){
     lasttime=time(NULL);
     clear();        //화면 clear
     print_menu(2);      //2번 메뉴 케이스 출력
-    printw("%.*s\n",termx-1, tp);     //현재 경로가 어디인지 출력
+    print_menu(14);
     print_detail();                   //detail 정보 출력
     get_name();                       //이름 검색 실행
     cur = cur2;
@@ -925,7 +943,7 @@ void sorting_l(){
     char ch;
     time_t lasttime;
     print_menu(13);     //13번 메뉴 케이스 출력
-    printw("%.*s\n",termx-1, tp);       //현재 경로 출력
+    print_menu(14);
     print_menu(4);     //4번 메뉴 케이스 출력
     while(1){
         if(ch == '1'){
@@ -1009,6 +1027,7 @@ void use_pin(){
                 break;
         }
         print_menu(6);      //6번 메뉴 케이스 출력
+        print_menu(14);
         if (ch == '1')     //1키를 눌렀을때, 프로그램 종류
             break;
         cur = start -> back;
@@ -1025,7 +1044,7 @@ void sorting_pin(){
     int ch = 0;
     time_t lasttime;
     print_menu(13);     //13번 메뉴 케이스 출력
-    printw("%.*s\n",termx-1, tp);       //현재 경로 출력
+    print_menu(14);
     print_menu(5);      //5번 메뉴 케이스 출력
     while(1){
         if(ch == '1'){
@@ -1051,28 +1070,29 @@ void sorting_pin(){
 //precondition: cur2가 NULL값을 가지거나 현재 디렉토리 밖의 파일을 포인트하면 안 된다.
 //postcondition: 현재 디렉토리의 파일들의 이름, 크기, 수정날짜를 detail하게 화면에 출력한다.
 void print_detail(){
+    int q;
     cur = cur2;     //cur을 현재 위치로 옮겨준다
     while(cur -> front -> op != 1 && cur -> front != start)    //cur을 열린 디렉토리의 맨 처음으로 옮겨준다 
         cur = cur -> front;
-    for(int q = 0; q < 80; q++)     //줄 출력
+    for(q = 0; q < 80; q++)     //줄 출력
         printw("-");
-    printw("\n%-30s\tFile Type\tSize\tLast Modification\n", "File name");       //맨 위 파일 형태 출력
-    for(int q = 0; q < 80; q++)     //줄 출력
+    printw("\n %-30s\tFile Type\tSize\tLast Modification\n", "File name");       //맨 위 파일 형태 출력
+    for(q = 0; q < 80; q++)     //줄 출력
         printw("-");
     printw("\n");
-    termy -= 15;       //줄바꿈
+    termy -= 6;       //줄바꿈
     while(--termy > 0){
         if(cur -> clos == 1 || cur -> back == &TAIL){       //열린 디렉토리의 맨 끝이 아닐때까지 탐색			
 		    if(cur == cur2){   //출력 파일이 현재 위치라면 (현재위치==cur2) 
         		attron(COLOR_PAIR(1));      //색 변환
                 snprintf(curstr, PATH_MAX*2,"(%s)", cur -> a);      ///curstr에 커서를 포함한 이름 넣어줌
-        		printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, curstr, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);     //파일 정보 색 변환해서 출력
+        		printw(" %-30.*s\t%s\t\t%ld\t%s", termx-1, curstr, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);     //파일 정보 색 변환해서 출력
        			//삼항 연산자를 이용하여 cur->type값이 4인 경우, Directory로 출력, 그렇지 않은 경우, Regular file로 출력
                 attroff(COLOR_PAIR(1));     //색 변환 종료    
 				break;
         	}
             else{      
-            	printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, cur -> a, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);       //파일 정보 색 변환 없이 출력
+            	printw(" %-30.*s\t%s\t\t%ld\t%s", termx-1, cur -> a, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);       //파일 정보 색 변환 없이 출력
             	//삼항 연산자를 이용하여 cur->type값이 4인 경우, Directory로 출력, 그렇지 않은 경우, Regular file로 출력
                 break;
 			}
@@ -1081,19 +1101,19 @@ void print_detail(){
             if(cur == cur2){
                 attron(COLOR_PAIR(1));      //색 변환
                 snprintf(curstr, PATH_MAX*2,"(%s)", cur -> a);      //curstr에 커서 포함 이름 넣어줌
-                printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, curstr, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
+                printw(" %-30.*s\t%s\t\t%ld\t%s", termx-1, curstr, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
                 //삼항 연산자를 이용하여 cur->type값이 4인 경우, Directory로 출력, 그렇지 않은 경우, Regular file로 출력
                 attroff(COLOR_PAIR(1));     //색 변환 종료
             }
             else{
-                printw("%-30.*s\t%s\t\t%ld\t%s", termx-1, cur -> a, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
+                printw(" %-30.*s\t%s\t\t%ld\t%s", termx-1, cur -> a, cur->type == 4 ? "Dir" : "Reg", cur -> list_size, cur ->list_change);
        			//삼항 연산자를 이용하여 cur->type값이 4인 경우, Directory로 출력, 그렇지 않은 경우, Regular file로 출력
             }
         }
         cur = cur -> back;      //한칸 뒤로 이동
     }
     if(termy > 1)
-        for(int q = 0; q < 80; q++)
+        for(q = 0; q < 80; q++)
             printw("-");
 }
 //precondition: tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
@@ -1102,7 +1122,7 @@ void use_edit(){
     char ch;
     time_t lasttime;
     print_menu(13);     //13번 메뉴 케이스 출력
-    printw("%.*s\n",termx-1, tp);     //현재 경로 출력
+    print_menu(14);
     print_menu(7);      //7번 메뉴 케이스 출력
     while(1){
         if(ch == '1'){      //파일 복사 기능
@@ -1172,9 +1192,7 @@ void detail(){
                 break;
         }
         print_menu(2);      //2번 메뉴 케이스 출력
-        attron(COLOR_PAIR(2));
-        printw("%.*s\n",termx-1, tp);     //현재 경로 출력
-        attroff(COLOR_PAIR(2));
+        print_menu(14);
         if (ch == '1')      //'1'누르면 tree view로 돌아감
             break;
         cur = start -> back;
