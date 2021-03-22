@@ -1087,6 +1087,8 @@ void print_detail(){
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)
         cur = cur -> front;
+    for(int q = 0; q < 80; q++)
+        printw("-");
     printw("\n%-30s\tFile Type\tSize\tLast Modification\n\n", "File name");
     termy -= 15;
     while(--termy > 0){
@@ -1115,6 +1117,9 @@ void print_detail(){
         }
         cur = cur -> back;
     }
+    if(termy > 1)
+        for(int q = 0; q < 80; q++)
+            printw("-");
 }
 //precondition: tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
 //postcondition: 메뉴창을 출력해주고 숫자를 입력하여 복사, 이동, 삭제를 하는 함수를 호출한 후 기능이 끝이나면 화면을 clear하고 종료한다.
