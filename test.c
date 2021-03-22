@@ -1276,6 +1276,7 @@ void detail(){
                 break;
             case '3':
                 use_search();           //검색 기능
+                getmaxyx(curscr,termy,termx);     //가로세로 구하기
                 break;
             case '4':
                 use_edit();             //편집 기능
