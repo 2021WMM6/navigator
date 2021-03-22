@@ -92,7 +92,7 @@ void sort_n();
 void sorting_l();
 void read_detail();
 void detail();
-void print_detail();
+void print_detail(int);
 void sorting_pin();
 void use_pin();
 void print_pin();
