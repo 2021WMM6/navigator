@@ -49,10 +49,18 @@ void print_menu(int n) {
             printw("|\n");
             break;
         case 5:
-            printw("\n|=========== PIN OPTION ===========|\n\n");
-            printw("\t1. Use Pin\n\n");
-            printw("\t2. Don't Use Pin\n\n");
-            printw("|==================================|\n\n");
+            printw("|");
+            for(k = 0; k < 33; k++)     //줄 출력
+                printw("=");
+            printw(" PIN OPTION ");
+            for(k = 0; k < 33; k++)     //줄 출력
+                printw("=");
+            printw("|\n");
+            printw("\t1. Use pin\t2. Don't Use Pin\n");
+            printw("|");
+            for(k = 0; k < 78; k++)     //줄 출력
+                printw("=");
+            printw("|\n");
             break;
         case 6:
             printw("|");
@@ -224,8 +232,10 @@ void copy_file_select(){
         }
         print_menu(9);      //9번 메뉴 케이스 출력
         print_menu(14);
-        if (ch == '1')      //1키가 눌리면 종료
+        if (ch == '1'){      //1키가 눌리면 종료
+            temp = 0;
             break;
+        }
         cur = start -> back;
         if(start -> back -> back == NULL || cur2 -> op == 1)
             break;
@@ -379,13 +389,17 @@ void select_location(int con){
                 if(cur2 -> type != DT_DIR)
                 break;
                 location_p(con);
+                temp = 1;
                 return;
             case 'h':
                 location_home(con);
+                temp = 1;
                 return;
         }
-        if (ch == '1') //프로그램 종료
+        if (ch == '1'){ //프로그램 종료
+            temp = 1;
             break;
+        }
         print_menu(11);     //11번 메뉴 케이스 출력
         snprintf(strbuf,PATH_MAX,"%s",wd);
 		attron(COLOR_PAIR(2));      //색 변환 ON
@@ -450,8 +464,10 @@ void move_file_select(){
         }
         print_menu(12);     //12번 메뉴 케이스 출력
         print_menu(14);
-        if (ch == '1')      //1키를 눌러서 종료
+        if (ch == '1'){      //1키를 눌러서 종료
+            temp = 0;
             break;
+        }
         cur = start -> back;
         if(start -> back -> back == NULL || cur2 -> op == 1)
             break;
@@ -614,6 +630,7 @@ void get_name(){
         mvprintw(3,85,"name not found : press enter to exit");      //찾을 수 없음을 출력해줌
         refresh();
         getch();
+        clear();
         nodelay(stdscr,TRUE);
         noecho();
         cbreak();   //변경한 설정을 원래대로 돌려놓음
@@ -1004,6 +1021,7 @@ void sorting_l(){
     time_t lasttime;
     while(1){
         getmaxyx(curscr,termy,termx);     //가로세로 구하기
+        lasttime=time(NULL);
         clear();
         print_menu(13);     //13번 메뉴 케이스 출력
         print_menu(14);
@@ -1102,10 +1120,15 @@ void use_pin(){
 void sorting_pin(){
     int ch = 0;
     time_t lasttime;
-    print_menu(13);     //13번 메뉴 케이스 출력
-    print_menu(14);
-    print_menu(5);      //5번 메뉴 케이스 출력
     while(1){
+        getmaxyx(curscr,termy,termx);     //가로세로 구하기
+        lasttime=time(NULL);
+        clear();
+        print_menu(13);     //13번 메뉴 케이스 출력
+        print_menu(14);
+        print_menu(5);     //4번 메뉴 케이스 출력
+        termy -= 3;
+        print_detail(2);
         if(ch == '1'){
             clear();        //화면 clear
             use_pin();      //핀 기능 사용
@@ -1120,11 +1143,13 @@ void sorting_pin(){
         }
         else if(ch == 'x'){     //x키를 눌렀을때, 화면 clear후, 프로그램 종류
             clear();        //화면 clear
+            getmaxyx(curscr,termy,termx);     //가로세로 구하기
             break;
         }
         refresh();
         while((ch=getch())==ERR && time(NULL)-lasttime<3);  //키 입력 될때 까지 대기
     }
+    clear();
 }
 //precondition: cur2가 NULL값을 가지거나 현재 디렉토리 밖의 파일을 포인트하면 안 된다.
 //postcondition: 현재 디렉토리의 파일들의 이름, 크기, 수정날짜를 detail하게 화면에 출력한다.
@@ -1184,14 +1209,22 @@ void use_edit(){
     print_menu(14);
     print_menu(7);      //7번 메뉴 케이스 출력
     while(1){
+        getmaxyx(curscr,termy,termx);     //가로세로 구하기
+        lasttime=time(NULL);
+        clear();
+        print_menu(13);     //13번 메뉴 케이스 출력
+        print_menu(14);
+        print_menu(7);      //7번 메뉴 케이스 출력
+        termy -= 3;
+        print_detail(2);
         if(ch == '1'){      //파일 복사 기능
-            copy_file_select();
             temp = 1;
+            copy_file_select();
             break;
         }
         else if(ch == '2'){      //파일 복사 기능
-            move_file_select();
             temp = 1;
+            move_file_select();
             break;
         }
         else if(ch == '3'){      //파일 삭제 기능
@@ -1208,11 +1241,12 @@ void use_edit(){
             break;
 		}
         else if(ch == 'x'){     //x키를 눌렀을때, 화면 clear후, 프로그램 종류
+            getmaxyx(curscr,termy,termx);     //가로세로 구하기
             clear();
             break;
         }
         refresh();
-        while((ch=getch())==ERR);       //키를 입력받을때까지 대기
+        while((ch=getch())==ERR && time(NULL)-lasttime<3);       //키를 입력받을때까지 대기
     }
     clear();        //화면 clear
 }
@@ -1238,6 +1272,7 @@ void detail(){
                 break;
             case '2':
                 sorting_pin();        //정렬 기능
+                getmaxyx(curscr,termy,termx);     //가로세로 구하기
                 break;
             case '3':
                 use_search();           //검색 기능
