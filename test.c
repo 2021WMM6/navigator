@@ -1089,7 +1089,10 @@ void print_detail(){
         cur = cur -> front;
     for(int q = 0; q < 80; q++)
         printw("-");
-    printw("\n%-30s\tFile Type\tSize\tLast Modification\n\n", "File name");
+    printw("\n%-30s\tFile Type\tSize\tLast Modification\n", "File name");
+    for(int q = 0; q < 80; q++)
+        printw("-");
+    printw("\n");
     termy -= 15;
     while(--termy > 0){
         if(cur -> clos == 1 || cur -> back == &TAIL){
