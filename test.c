@@ -560,8 +560,6 @@ void get_name(){
         nodelay(stdscr,TRUE);
         noecho();
         cbreak();
-        snprintf(strbuf,PATH_MAX*2,"(%s)", cur2 -> a);
-        strcpy(cur2 -> a, strbuf);
         return;
     }
 }
