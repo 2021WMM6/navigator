@@ -619,15 +619,15 @@ void select_search_list(){
 //               cur2가 가리키는 파일에 ()를 붙여준다.
 void get_name(){
     char name1[100];    //찾을 파일명 받는 문자열
-    mvprintw(0,85,"------------------------------------------\n");
+    mvprintw(0,84,"--------------------------------------------\n");
     for(int i=1;i<5;i++)
         mvprintw(i,84,"|                                          |");
-    mvprintw(5,85,"------------------------------------------\n");      
-    mvprintw(1,85,"File Name: ");           //이름받는 칸 출력
+    mvprintw(5,84,"--------------------------------------------\n");      
+    mvprintw(1,85," File Name: ");           //이름받는 칸 출력
     nocbreak();
     echo();
     nodelay(stdscr,FALSE);          //mvscanw을 하기위해 설정 변경
-    mvscanw(1,96,"%s",name1);       //찾을 파일명 입력받음
+    mvscanw(1,97,"%s",name1);       //찾을 파일명 입력받음
     search(name1);      //이름 찾는 함수
     if(temp == 1){      //찾고자 하는 이름이 포함되어 있다면
         select_search_list();   //포함한 이름을 모두 출력해준 후 선택하는 창 만들어줌
@@ -654,12 +654,10 @@ void print_search_list(){
         if(cur -> search_list == 1){                    //파일이 검색한 키워드와 일치하는 경우
             mvprintw(i,84,"|                                          |");
 			if(cur==cur2){      //현재 커서 위치를 출력할 것임
-                attron(COLOR_PAIR(1));        //색 변환 ON
-                mvprintw(i, 85, "(%s)", cur -> a);     //괄호 포함해서 출력
-                attroff(COLOR_PAIR(1));     //색 변환 OFF
+                mvprintw(i, 85, " (%s)", cur -> a);     //괄호 포함해서 출력
 			}
             else{   //현재 커서 위치가 아닌 파일명을 출력
-                mvprintw(i, 85, "%s", cur -> a);    //그냥 파일 이름만 출력
+                mvprintw(i, 85, " %s", cur -> a);    //그냥 파일 이름만 출력
             }
 			i++;
         }
@@ -667,7 +665,7 @@ void print_search_list(){
     }
     mvprintw(i,84,"|                                          |");
     mvprintw(i,84,"|           press button 1 to exit         |");
-    mvprintw(i + 1,85,"------------------------------------------\n");
+    mvprintw(i + 1,84,"--------------------------------------------\n");
 }
 //precondition: cur2가 NULL값을 가지면 안 된다.
 //postcondition: detail 정보를 옆에 출력해준 상태에서 searching 기능을 실행시켜 주고 기능이 끝나면 화면을 clear해 준다.
@@ -680,7 +678,9 @@ void use_search(){
     print_menu(2);      //2번 메뉴 케이스 출력
     print_menu(14);
     print_detail(2);                   //detail 정보 출력
+    attron(COLOR_PAIR(3));
     get_name();                       //이름 검색 실행
+    attroff(COLOR_PAIR(3));
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)         //cur가 디렉토리 파일의 첫번째 파일을 포인트할 때까지 반복
         cur = cur -> front;
@@ -1035,6 +1035,9 @@ void sorting_l(){
         print_menu(4);     //4번 메뉴 케이스 출력
         termy -= 3;
         print_detail(2);
+        attron(COLOR_PAIR(3));
+        print_pin();
+        attroff(COLOR_PAIR(3));
         if(ch == '1'){
             sort(ch);
             break;      //sort함수 인자에 1넣어서 호출
@@ -1052,6 +1055,16 @@ void sorting_l(){
             break;      //sort함수 인자에 4넣어서 호출
         }
         else if(ch == 'x'){     //x키를 눌렀을때, 화면 clear후, 프로그램 종류
+            cur = cur2;         //cur가 현재 커서가 있는 자료를 가리키도록 한다.
+            while(cur -> front -> op != 1 && cur -> front != start)     //cur가 디렉토리 안의 첫 번째 파일을 가리킬때까지 반복
+                cur = cur -> front;                                     //cur가 앞의 자료를 가리킨다.
+            cur3 = cur;             //cur3은 디렉토리 안의 첫 번째 파일을 가리키도록 한다.
+            while(cur -> back != NULL && cur -> front -> clos != 1){     //cur가 마지막 파일을 가리킬때까지 반복
+                if(cur -> pin == 1){                //cur가 가리키는 파일이 pin기능이 사용된 경우
+                    cur -> pin = 0;
+                }
+                cur = cur -> back;                  //cur가 다음 파일을 가리킨다.
+            }
             clear();        //화면 clear
             break;
         }
@@ -1064,24 +1077,24 @@ void sorting_l(){
 //postcondition: Pin으로 고정된 파일들의 목록을 detail 옆에 출력해준다.
 void print_pin(){
     int i = 3;
-    mvprintw(0,86,"------------------------------------------\n");
+    mvprintw(0,85,"--------------------------------------------\n");
     for(int i=1;i<3;i++){
         mvprintw(i,85,"|                                          |");
     }
-    mvprintw(1,86,"PIN List: ");    
+    mvprintw(1,86," PIN List: ");    
     cur = cur2;     //cur을 현재 커서 위치로 이동시킴
     while(cur -> front -> op != 1 && cur -> front != start)     //열린 디렉토리의 맨 처음이 될 때까지 cur을 앞으로 이동시킴
         cur = cur -> front;     //다음 cur로 이동
     while(cur -> back != NULL && cur -> front -> clos != 1){    //디렉토리의 맨 끝이 아니라면 
         if(cur -> pin == 1){
             mvprintw(i,85,"|                                          |");
-            mvprintw(i, 86, "%s", cur -> a);
+            mvprintw(i, 86, " %s", cur -> a);
             i++;
         }
         cur = cur -> back;
     }
     mvprintw(i,85,"|                                          |");
-    mvprintw(i + 1,86,"------------------------------------------\n");
+    mvprintw(i + 1,85,"--------------------------------------------\n");
 }
 //precondition: cur2가 NULL값을 가지거나 현재 디렉토리 밖의 파일을 포인트하면 안 된다.
 //postcondition: 현재 ()로 가리키고 있는 파일들을 p를 눌러서 Pin list에 추가하거나 뺄 수 있고 1누르면 Pin 기능을 종료한다.
@@ -1116,7 +1129,9 @@ void use_pin(){
             break;
         cur = start -> back;
         print_detail(1); // 현재 디렉토리 안에 있는 파일만 자세하게 출력;
+        attron(COLOR_PAIR(3));
         print_pin();    //pin list를 출력한다.
+        attroff(COLOR_PAIR(3));
         refresh();
         while((ch=getch())==ERR && time(NULL)-lasttime<3);   //키 입력 될때까지 대기
     }
@@ -1404,8 +1419,11 @@ int main(){
             break;
         print_menu(1);      //1번 메뉴 케이스 출력
         snprintf(strbuf,PATH_MAX,"%s",wd);
-        if(termy-- > 3)
+        if(termy-- > 3){
+            attron(COLOR_PAIR(2));
             printw("%.*s",termx-1,strbuf);           //현재 경로 출력
+            attroff(COLOR_PAIR(2));
+        }
         cur = start -> back;
         if(start -> back -> back == NULL)           //링크드 리스트에 아무런 자료도 없을 때
             break;
