@@ -948,6 +948,7 @@ void close_dir(){
     cur2 = cur;                 //현재 커서를 닫은 디렉토리를 가리키도록 한다.
     int k = strlen(dp) - strlen(cur -> a) - 1;          //k에 바뀐 경로의 문자 갯수를 저장
     sprintf(tp, "%.*s", k, dp);                          //tp에 바뀐 현재 경로를 저장한다.
+    strcpy(dp, tp);
 }
 //precondition: 1 <= ch <= 3 이어야하고 cur는 NULL이거나 정렬하고자 하는 파일들 중 마지막 파일을 포인트하고 있으면 안 된다. 
 //              cur3은 cur -> back을 포인트하고 있어야한다.
@@ -1303,6 +1304,7 @@ void detail(){
                 cur2 -> clos = 0;
             int k = strlen(dp) - strlen(cur2 -> a) + 1;     //k에 바뀐 경로의 문자 갯수를 저장
             sprintf(tp, "%.*s", k, dp);                 //tp에 바뀐 현재 경로를 저장한다.
+            strcpy(dp, tp);
             clear();        //화면 clear
             print_menu(3);      //3번 메뉴 케이스 출력
             refresh();
