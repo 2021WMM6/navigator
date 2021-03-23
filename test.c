@@ -9,9 +9,9 @@ void print_menu(int n) {
     int k;
     switch(n) {
         case 1:
-            printw("|============== MENU ==============|\n");
+            printw("\n|============== MENU ==============|\n");
             printw("   1. See Detail\tX. Exit\n");
-            printw("|==================================|\n");
+            printw("|==================================|\n\n");
             break;
         case 2:
             printw("|");
