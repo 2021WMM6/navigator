@@ -9,10 +9,9 @@ void print_menu(int n) {
     int k;
     switch(n) {
         case 1:
-            printw("|============== MENU ==============|\n\n");
-            printw("\t1. See Detail\n\n");
-            printw("\tX. Exit\n\n");
-            printw("|==================================|\n\n");
+            printw("|============== MENU ==============|\n");
+            printw("   1. See Detail\tX. Exit\n");
+            printw("|==================================|\n");
             break;
         case 2:
             printw("|");
@@ -673,7 +672,7 @@ void use_search(){
     clear();        //화면 clear
     print_menu(2);      //2번 메뉴 케이스 출력
     print_menu(14);
-    print_detail(1);                   //detail 정보 출력
+    print_detail(2);                   //detail 정보 출력
     get_name();                       //이름 검색 실행
     cur = cur2;
     while(cur -> front -> op != 1 && cur -> front != start)         //cur가 디렉토리 파일의 첫번째 파일을 포인트할 때까지 반복
@@ -823,12 +822,12 @@ void Attr(){        //트리뷰에서 파일 이름 출력할 때 색 여부 판
 //postcondition: 링크드 리스트의 파일들을 tree view형식으로 출력한다.
 void print_tree(){
     int i = 0;
-    if(termy> 7)
+    if(termy> 2)
         printw(" --- ");
     getyx(stdscr, y, x); //현재 커서 좌표 구하는 함수
     row = x - 3;
     push(row);      //row정보 stack에 저장
-    termy -= 6;
+    termy -= 1;
     while(--termy > 0){
         if(cur -> op == 1){             //열린 디렉토리 맨 처음 부분일 때
             if(cur -> front -> op != 1 && cur -> front != start){
@@ -1397,7 +1396,7 @@ int main(){
             break;
         print_menu(1);      //1번 메뉴 케이스 출력
         snprintf(strbuf,PATH_MAX,"%s",wd);
-        if(termy-- > 8)
+        if(termy-- > 3)
             printw("%.*s",termx-1,strbuf);           //현재 경로 출력
         cur = start -> back;
         if(start -> back -> back == NULL)           //링크드 리스트에 아무런 자료도 없을 때
