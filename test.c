@@ -132,11 +132,18 @@ void print_menu(int n) {
             printw("|\n");
             break;
         case 11:
-            printw("|==================================|\n\n");
-            printw("\t1. Quit\n\n");
-            printw("Select directory where to paste your file with press 'p'\n\n");
-            printw("If you want to select home directory, press 'h'\n\n");
-            printw("|==================================|\n\n");
+            printw("\n|");
+            for(k = 0; k < 34; k++)     //줄 출력
+                printw("=");
+            printw(" MENU ");
+            for(k = 0; k < 34; k++)     //줄 출력
+                printw("=");
+            printw("|\n");
+            printw("   1. Quit\tp. paste to directory\t   h. paste to home directory\n");
+            printw("|");
+            for(k = 0; k < 74; k++)     //줄 출력
+                printw("=");
+            printw("|\n");
             break;
         case 12:
             printw("|");
@@ -537,8 +544,9 @@ void delete_file_select(){
         if (ch == '1')
             break;      //1키를 누르면 종료
         cur = start -> back;
-        if(start -> back -> back == NULL || cur2 -> op == 1)
+        if(start -> back -> back == NULL || cur2 -> op == 1){
             break;
+        }
         print_detail(1);
         refresh();
         while((ch=getch())==ERR && time(NULL)-lasttime<3);
@@ -1023,7 +1031,7 @@ void sort(char ch){
 }
 //precondition: tp는 현재 디렉토리의 경로를 문자열로 가지고 있어야 한다.
 //postcondition: Sorting을 어떤 기준으로 할 것인지 메뉴를 화면에 출력해주고 ch값을 입력받고 정렬 기능을 실행한다.
-void sorting_l(){
+void sorting_l(int t){
     char ch;
     time_t lasttime;
     while(1){
@@ -1035,9 +1043,11 @@ void sorting_l(){
         print_menu(4);     //4번 메뉴 케이스 출력
         termy -= 3;
         print_detail(2);
-        attron(COLOR_PAIR(3));
-        print_pin();
-        attroff(COLOR_PAIR(3));
+        if(t == 2){
+            attron(COLOR_PAIR(3));
+            print_pin();
+            attroff(COLOR_PAIR(3));
+        }
         if(ch == '1'){
             sort(ch);
             break;      //sort함수 인자에 1넣어서 호출
@@ -1155,12 +1165,12 @@ void sorting_pin(){
             clear();        //화면 clear
             use_pin();      //핀 기능 사용
             clear();        //화면 clear
-            sorting_l();    //정렬 타입 선택해서 정렬
+            sorting_l(2);    //정렬 타입 선택해서 정렬
             break;
         }
         else if(ch == '2'){
             clear();        //화면 clear
-            sorting_l();    //정렬 타입 선택해서 정렬
+            sorting_l(1);    //정렬 타입 선택해서 정렬
             break;
         }
         else if(ch == 'x'){     //x키를 눌렀을때, 화면 clear후, 프로그램 종류
@@ -1317,7 +1327,7 @@ void detail(){
             cur2 -> op = 0;
             if(check != 1)              //현재 열어 놓은 디렉토리가 상위 디렉토리 파일 중 마지막 파일이 아닐 경우
                 cur2 -> clos = 0;
-            int k = strlen(dp) - strlen(cur2 -> a) + 1;     //k에 바뀐 경로의 문자 갯수를 저장
+            int k = strlen(dp) - strlen(cur2 -> a) - 1;     //k에 바뀐 경로의 문자 갯수를 저장
             sprintf(tp, "%.*s", k, dp);                 //tp에 바뀐 현재 경로를 저장한다.
             strcpy(dp, tp);
             clear();        //화면 clear
@@ -1421,6 +1431,7 @@ int main(){
         snprintf(strbuf,PATH_MAX,"%s",wd);
         if(termy-- > 3){
             attron(COLOR_PAIR(2));
+            //printw("tp: %s\n", tp);
             printw("PATH: %.*s",termx-1,strbuf);           //현재 경로 출력
             attroff(COLOR_PAIR(2));
         }

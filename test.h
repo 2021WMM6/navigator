@@ -89,7 +89,7 @@ void read_tree();
 void open_dir();
 void close_dir();
 void sort_n();
-void sorting_l();
+void sorting_l(int);
 void read_detail();
 void detail();
 void print_detail(int);
