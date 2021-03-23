@@ -438,7 +438,7 @@ void move_file(){
     strcpy(strex, cur2 -> a);
     move_type = cur2 -> type;
     cur3 = cur2;
-    while(cur3 -> front != start){
+    while(cur3 != start){
         if(cur3 -> op == 1){
             temp = 1;
             break;
@@ -1431,7 +1431,6 @@ int main(){
         snprintf(strbuf,PATH_MAX,"%s",wd);
         if(termy-- > 3){
             attron(COLOR_PAIR(2));
-            //printw("tp: %s\n", tp);
             printw("PATH: %.*s",termx-1,strbuf);           //현재 경로 출력
             attroff(COLOR_PAIR(2));
         }
