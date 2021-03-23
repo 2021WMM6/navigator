@@ -291,6 +291,7 @@ void File_rename(){
                 rena(); //이름 변경하는 함수
                 sprintf(lastname,"%s",newname);   //lastname에다가 커서 포함하여 이름 넣어줌
                 strcpy(cur2->a,lastname);   //
+                getmaxyx(curscr,termy,termx);     //가로세로 구하기
                break;
         }
         print_menu(10);     //10번 메뉴 케이스 출력
