@@ -1421,7 +1421,7 @@ int main(){
         snprintf(strbuf,PATH_MAX,"%s",wd);
         if(termy-- > 3){
             attron(COLOR_PAIR(2));
-            printw("%.*s",termx-1,strbuf);           //현재 경로 출력
+            printw("PATH: %.*s",termx-1,strbuf);           //현재 경로 출력
             attroff(COLOR_PAIR(2));
         }
         cur = start -> back;
