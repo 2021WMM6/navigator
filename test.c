@@ -246,6 +246,7 @@ void copy_file_select(){
 }
 void rena(){        //이름 변경하는 함수
     chdir(tp);      //현재 주소 tp로 변경
+	attron(COLOR_PAIR(3));
     mvprintw(5,5,"-----------------------------");
     for(int i=6;i<9;i++)
         mvprintw(i,5,"|                           |");
@@ -254,11 +255,12 @@ void rena(){        //이름 변경하는 함수
     nocbreak();
     echo();
     nodelay(stdscr,FALSE);      //mvscanf를 하기 위한 설정 변경
-    strncpy(curname,cur2->a+1,strlen(cur2->a)-2);
+    strcpy(curname,cur2->a);
     mvscanw(7,17,"%s",newname);     //새롭게 변경할 이름 입력받음
     int result=rename(curname,newname);     //현재 커서의 이름을 입력받은 이름으로 변경
     if(result==-1)      //rename함수가 -1을 리턴한다면
         mvprintw(8,7,"error");  //error 출력
+	attroff(COLOR_PAIR(3));
     cbreak();
     noecho();
     nodelay(stdscr,TRUE);       //설정 원래대로 돌려놓음
@@ -282,11 +284,14 @@ void File_rename(){
                 break;
             case 'r':
                 print_menu(10);     //10번 메뉴 케이스 출력
+				attron(COLOR_PAIR(2));
+           		printw(" PATH : %.*s\n",termx-1, tp);     //현재 경로 출력  
+				attroff(COLOR_PAIR(2));
                 print_detail(1);     //디테일한 정보 출력 함수
                 rena(); //이름 변경하는 함수
-                sprintf(lastname,"(%s)",newname);   //lastname에다가 커서 포함하여 이름 넣어줌
+                sprintf(lastname,"%s",newname);   //lastname에다가 커서 포함하여 이름 넣어줌
                 strcpy(cur2->a,lastname);   //
-                break;
+               break;
         }
         print_menu(10);     //10번 메뉴 케이스 출력
         print_menu(14);
@@ -295,6 +300,7 @@ void File_rename(){
         cur = start -> back;
         if(start -> back -> back == NULL || cur2 -> op == 1)    
             break;
+
         print_detail(1);     //파일 디테일한 정보 출력함수
         refresh();
         while((ch=getch())==ERR && time(NULL)-lasttime<3);
@@ -1359,6 +1365,7 @@ int main(){
     cur2 = end -> front;
 	init_pair(1,COLOR_BLUE,COLOR_BLACK);
 	init_pair(2,COLOR_CYAN,COLOR_BLACK);
+	init_pair(3,COLOR_BLACK,COLOR_WHITE);
     while(1){   //탈출 조건-> x눌렀을때.
         getmaxyx(curscr,termy,termx);     //가로세로 구하기
         lasttime=time(NULL);
